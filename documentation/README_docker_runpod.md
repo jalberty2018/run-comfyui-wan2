@@ -45,7 +45,6 @@
 
 - [Start](https://comfyui.rozenlaan.site/ComfyUI_WAN/)
 - [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
-- [Workflows](https://comfyui.rozenlaan.site/ComfyUI_WAN_workflows/)
 
 ##  Hardware Requirements
 
