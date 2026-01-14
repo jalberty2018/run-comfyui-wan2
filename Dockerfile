@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:07012026
+FROM ls250824/comfyui-runtime:13012026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -82,11 +82,6 @@ RUN set -eux; \
       sed -i -E 's/^( *| *)(onnxruntime)([<>=].*)?(\s*)$/\1onnxruntime-gpu==1.22.*\4/i' "$f"; \
     done
 
-# VideoWrapper working with TripleKSampler -> e2333d0f04e7292e07d504cb824256f1ca8e63e4 (04dec25)
-
-# IAMCSS V1 used for animate workflow.
-# RUN cd IAMCCS-nodes && git checkout 8722d908cdc042baa74bd46549ec32876e234411
-
 # Install Dependencies for Cloned Repositories
 WORKDIR /ComfyUI/custom_nodes
 
@@ -150,7 +145,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.8.0b for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.9.1 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"
