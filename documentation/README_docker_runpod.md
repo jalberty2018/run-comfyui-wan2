@@ -46,6 +46,17 @@
 - [Start](https://comfyui.rozenlaan.site/ComfyUI_WAN/)
 - [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
 
+### Templates to generate/edit images
+
+- 👉 [Runpod Z-Image Turbo](https://console.runpod.io/deploy?template=ia5t70hfak&ref=se4tkc5o)
+- 👉 [Runpod Flux.2 Dev](https://console.runpod.io/deploy?template=8nl523gts5&ref=se4tkc5o)
+- 👉 [Runpod Qwen image 2512](https://console.runpod.io/deploy?template=3fri17sxaa&ref=se4tkc5o)
+- 👉 [Runpod Qwen image edit 2511](https://console.runpod.io/deploy?template=mxvvx0hcmp&ref=se4tkc5o)
+
+### Template video model with sound generation
+
+- 👉[RunPod LTX-2 dev](https://console.runpod.io/deploy?template=p4f6rm9tb4&ref=se4tkc5o)
+
 ##  Hardware Requirements
 
 ### T2V-A14B or I2V-A14B (high/low) 
