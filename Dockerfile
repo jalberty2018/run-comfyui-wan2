@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:13012026
+FROM ls250824/comfyui-runtime:27012026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -66,11 +66,10 @@ RUN --mount=type=cache,target=/root/.cache/git \
     git clone --depth=1 --filter=blob:none https://github.com/shootthesound/comfyUI-LongLook.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterI2Vadvanced.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/SeanScripts/ComfyUI-Unload-Model.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/Windecay/ComfyUI_Dynamic-RAMCache.git
-
-# Outputlists-combiner working version
-# RUN cd ComfyUI-outputlists-combiner && git fetch --unshallow && git checkout be17d247db29d555df4bc1c776b2b9289f7f42ba
-
+	git clone --depth=1 --filter=blob:none https://github.com/Windecay/ComfyUI_Dynamic-RAMCache.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterMultiF2V.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git
+	
 # triton-windows error
 # RUN cd ComfyUI-RMBG && git fetch --unshallow && git checkout 9ecda2e689d72298b4dca39403a85d13e53ea659
 
@@ -103,7 +102,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-JoyCaption/requirements_gguf.txt \
 	-r ComfyUI-outputlists-combiner/requirements.txt \
 	-r ComfyUI-SCAIL-Pose/requirements.txt \
-	-r ComfyUI-WanAnimatePreprocess/requirements.txt
+	-r ComfyUI-WanAnimatePreprocess/requirements.txt \
+	-r ComfyUI-SAM3/requirements.txt
 
 # Activate SAM3
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
@@ -145,7 +145,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.9.1 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.11.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"

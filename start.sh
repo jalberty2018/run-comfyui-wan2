@@ -21,7 +21,8 @@ if [[ -n "${RUNPOD_GPU_COUNT:-}" ]]; then
 fi
 
 # Move necessary files to workspace
-echo "ℹ️ [Moving necessary files to workspace] enabling Start/Stop/Restart pod without data loss"
+echo "ℹ️ [Moving necessary files to workspace] enabling Start/Stop/Restart pod without data loss."
+echo "ℹ️ This takes some time on slower processors, longer if the volume is encrypted."    
 for script in comfyui-on-workspace.sh files-on-workspace.sh test-on-workspace.sh docs-on-workspace.sh; do
     if [ -f "/$script" ]; then
         echo "Executing $script..."
@@ -36,7 +37,6 @@ mkdir -p /workspace/output/
 
 # Set optimizations
 export PYTORCH_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.8
-export COMFYUI_VRAM_MODE=HIGH_VRAM
 
 # GPU detection
 echo "ℹ️ Testing GPU/CUDA provisioning"
@@ -134,21 +134,29 @@ else
     echo "❌ ERROR: PyTorch CUDA driver mismatch or unavailable, ComfyUI not started"
 fi
 
-# Function to download models if variables are set
+# Provisioning routines
+
 download_model_HF() {
     local model_var="$1"
     local file_var="$2"
     local dest_dir="$3"
-	
-    if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then		
-        local target="/workspace/ComfyUI/models/$dest_dir"
-        mkdir -p "$target"
-        echo "ℹ️ [DOWNLOAD] Fetching ${!model_var}/${!file_var} → $target"
-        hf download "${!model_var}" "${!file_var}" --local-dir "$target" || \
-            echo "⚠️ Failed to download ${!model_var}/${!file_var}"
-        sleep 1
+
+    if [[ -z "${!model_var}" || -z "${!file_var}" ]]; then
+        return 0
     fi
 
+    local model="${!model_var}"
+    local file="${!file_var}"
+    local target="/workspace/ComfyUI/models/$dest_dir"
+    mkdir -p "$target"
+
+    echo "ℹ️ [DOWNLOAD] Fetching $model + $file → $target"
+
+    if ! hf download "$model" "$file" --local-dir "$target" >/dev/null 2>&1; then
+        echo "⚠️ HF download failed"
+    fi
+
+    sleep 1
     return 0
 }
 
@@ -168,14 +176,18 @@ download_generic_HF() {
     local target="/workspace/ComfyUI/$dest_dir"
     mkdir -p "$target"
 
+    local status="ok"
+
     if [[ -n "$file" ]]; then
         echo "ℹ️ [DOWNLOAD] Fetching $model/$file → $target"
-        hf download "$model" "$file" --local-dir "$target" || \
-            echo "⚠️ Failed to download $model/$file"
+        hf download "$model" "$file" --local-dir "$target" >/dev/null 2>&1 || status="fail"
     else
         echo "ℹ️ [DOWNLOAD] Fetching $model → $target"
-        hf download "$model" --local-dir "$target" || \
-            echo "⚠️ Failed to download $model"
+        hf download "$model" --local-dir "$target" >/dev/null 2>&1 || status="fail"
+    fi
+
+    if [[ "$status" == "fail" ]]; then
+        echo "⚠️ HF download generic failed: $model/$file/$target "
     fi
 
     sleep 1
@@ -186,15 +198,8 @@ download_model_CIVITAI() {
     local url_var="$1"
     local dest_dir="$2"
 
-    # Geen URL → niets doen
     if [[ -z "${!url_var}" ]]; then
         return 0
-    fi
-
-    # Token check
-    if [[ -z "$CIVITAI_TOKEN" ]]; then
-        echo "⚠️ ERROR: CIVITAI_TOKEN is not set as an environment variable – '${!url_var}' not downloaded"
-        return 1
     fi
 
     local target="/workspace/ComfyUI/models/$dest_dir"
@@ -202,22 +207,25 @@ download_model_CIVITAI() {
 
     local url="${!url_var}"
 
-    # Probeer bestandsnaam te bepalen
+    if [[ -z "$CIVITAI_TOKEN" ]]; then
+        echo "⚠️ ERROR: CIVITAI_TOKEN is not set '$url' not downloaded"
+        return 1
+    fi
+
     local filename
     filename="$(basename "$(printf '%s\n' "$url" | sed 's/[?#].*$//')")"
 
-    # Fallback: onbekende naam (bij API download)
     if [[ "$filename" == "download" || "$filename" == "models" || -z "$filename" ]]; then
         filename=""
     fi
 
-    # Bestaat het bestand al?
     if [[ -n "$filename" ]] && compgen -G "$target/$filename*" > /dev/null; then
         echo "✅ [SKIP] $filename already exists in $target"
         return 0
     fi
 
     echo "ℹ️ [DOWNLOAD] Fetching $url → $target ..."
+    
     civitai --quit "$url" "$target" || {
         echo "⚠️ Failed to download $url"
         return 1
@@ -230,77 +238,57 @@ download_model_CIVITAI() {
 download_workflow() {
     local url_var="$1"
 
-    # Check if URL variable is set and not empty
     if [[ -z "${!url_var}" ]]; then
         return 0
     fi
 
-    # Destination directory
+    local url="${!url_var}"
     local dest_dir="/workspace/ComfyUI/user/default/workflows/"
     mkdir -p "$dest_dir"
 
-    # Get filename from URL
-    local url="${!url_var}"
     local filename
-    filename=$(basename "$url")
+    filename="$(basename "$url")"
     local filepath="${dest_dir}${filename}"
 
-    # Skip entire process if file already exists
     if [[ -f "$filepath" ]]; then
-        echo "⏭️  [SKIP] $filename already exists — skipping download and extraction"
+        echo "⏭️  [SKIP] $filename already exists"
         return 0
     fi
 
-    # Download file
     echo "ℹ️ [DOWNLOAD] Fetching $filename ..."
-    if wget -q -P "$dest_dir" "$url"; then
-        echo "[DONE] Downloaded $filename"
-    else
-        echo "⚠️  Failed to download $url"
+
+    if ! wget -q -P "$dest_dir" "$url"; then
+        echo "⚠️ Download model workflow failed: $url"
         return 0
     fi
 
-    # Automatically extract common archive formats
+    echo "[DONE] Downloaded $filename"
+
     case "$filename" in
         *.zip)
             echo "📦  [EXTRACT] Unzipping $filename ..."
-            if unzip -o "$filepath" -d "$dest_dir" >/dev/null 2>&1; then
-                echo "[DONE] Extracted $filename"
-            else
+            unzip -o "$filepath" -d "$dest_dir" >/dev/null 2>&1 || \
                 echo "⚠️  Failed to unzip $filename"
-            fi
             ;;
         *.tar.gz|*.tgz)
             echo "📦  [EXTRACT] Extracting $filename (tar.gz) ..."
-            if tar -xzf "$filepath" -C "$dest_dir"; then
-                echo "[DONE] Extracted $filename"
-            else
+            tar -xzf "$filepath" -C "$dest_dir" || \
                 echo "⚠️  Failed to extract $filename"
-            fi
             ;;
         *.tar.xz)
             echo "📦  [EXTRACT] Extracting $filename (tar.xz) ..."
-            if tar -xJf "$filepath" -C "$dest_dir"; then
-                echo "[DONE] Extracted $filename"
-            else
+            tar -xJf "$filepath" -C "$dest_dir" || \
                 echo "⚠️  Failed to extract $filename"
-            fi
             ;;
         *.tar.bz2)
             echo "📦  [EXTRACT] Extracting $filename (tar.bz2) ..."
-            if tar -xjf "$filepath" -C "$dest_dir"; then
-                echo "[DONE] Extracted $filename"
-            else
+            tar -xjf "$filepath" -C "$dest_dir" || \
                 echo "⚠️  Failed to extract $filename"
-            fi
             ;;
         *.7z)
             echo "📦  [EXTRACT] Extracting $filename (7z) ..."
-            if 7z x -y -o"$dest_dir" "$filepath" >/dev/null 2>&1; then
-                echo "[DONE] Extracted $filename"
-            else
+            7z x -y -o"$dest_dir" "$filepath" >/dev/null 2>&1 || \
                 echo "⚠️  Failed to extract $filename"
-            fi
             ;;
         *)
             echo "[INFO] No extraction needed for $filename"
@@ -349,22 +337,7 @@ download_media() {
 
 # Provisioning if comfyUI is responding running on GPU with CUDA
 if [[ "$HAS_COMFYUI" -eq 1 ]]; then  
-    # provisioning workflows
-    echo "📥 Provisioning workflows"
-	
-    for i in $(seq 1 50); do
-        VAR="WORKFLOW${i}"
-        download_workflow "$VAR"
-    done
-	
-    # provisioning input media for test/tutorial purpose
-    echo "📥 Provisioning input media"
-	
-    for i in $(seq 1 50); do
-        VAR="MEDIA${i}"
-        download_media "$VAR"
-    done
-
+    
     # provisioning Models and loras
     echo "📥 Provisioning models HF"
 	
@@ -382,8 +355,46 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
       "VL:VL_FILENAME:VLM"
       "SAMS:SAMS_FILENAME:sams"
       "LATENT_UPSCALE:LATENT_UPSCALE_FILENAME:latent_upscale_models"
+      "VAE_APPROX:VAE_APPROX_FILENAME:vae_approx"
     )
 	
+    # Huggingface download file depending on VRAM available to specified directory
+
+    get_max_vram_gib() {
+      if ! command -v nvidia-smi >/dev/null 2>&1; then
+         echo 0
+         return
+      fi
+
+      nvidia-smi \
+         --query-gpu=memory.total \
+         --format=csv,noheader,nounits \
+        | awk 'BEGIN{m=0} {if($1>m) m=$1} END{print int(m/1024)}'
+    }
+
+    MAX_VRAM_GIB="$(get_max_vram_gib)"
+    VRAM_THRESHOLD="${VRAM_THRESHOLD:-36}"
+
+    if (( MAX_VRAM_GIB > VRAM_THRESHOLD )); then
+        HF_PREFIX="HF_MODEL_HVRAM_"
+        echo "🟢 High VRAM detected (${MAX_VRAM_GIB} GB > ${VRAM_THRESHOLD} GB)"
+        export COMFYUI_VRAM_MODE=HIGH_VRAM
+    else
+       HF_PREFIX="HF_MODEL_LVRAM_"
+       echo "🟡 Low VRAM detected (${MAX_VRAM_GIB} GB < ${VRAM_THRESHOLD} GB)"
+    fi
+
+    for cat in "${CATEGORIES_HF[@]}"; do
+      IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
+
+      for i in $(seq 1 20); do
+        VAR_MODEL="${HF_PREFIX}${NAME}${i}"
+        VAR_FILE="${HF_PREFIX}${SUFFIX}${i}"
+        download_model_HF "$VAR_MODEL" "$VAR_FILE" "$DIR"
+      done
+    done
+
+    # Huggingface download file to specified directory independent on VRAM 
     for cat in "${CATEGORIES_HF[@]}"; do
       IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
 	
@@ -393,8 +404,8 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
         download_model_HF "$VAR1" "$VAR2" "$DIR"
       done
     done
-	
-    # Huggingface download file to specified directory
+
+    # Huggingface download file to specified directory independent on VRAM
     for i in $(seq 1 20); do
         VAR1="HF_MODEL${i}"
         VAR2="HF_MODEL_FILENAME${i}"
@@ -402,7 +413,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
         download_generic_HF "${VAR1}" "${VAR2}" "${!DIR_VAR}"
     done
 	
-    # Huggingface download full model to specified directory
+    # Huggingface download full model to specified directory independent on VRAM
     for i in $(seq 1 20); do
         VAR1="HF_FULL_MODEL${i}"
         DIR_VAR="HF_MODEL_DIR${i}"
@@ -417,7 +428,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
        "LORA_URL:loras"
 	   "UNET_URL:diffusion_models"
     )
-	
+
     for cat in "${CATEGORIES_CIVITAI[@]}"; do
       IFS=":" read -r NAME DIR <<< "$cat"
 	
@@ -425,6 +436,34 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
         VAR1="CIVITAI_MODEL_${NAME}${i}"
         download_model_CIVITAI "$VAR1" "$DIR"
       done
+    done
+
+    echo "📥 Provisioning workflows"
+
+    # provisioning workflows VRAM dependent
+    if (( MAX_VRAM_GIB > 40 )); then
+       WORKFLOW_PREFIX="WORKFLOW_HVRAM"
+    else
+       WORKFLOW_PREFIX="WORKFLOW_LVRAM"
+    fi
+
+    for i in $(seq 1 50); do
+        VAR="${WORKFLOW_PREFIX}${i}"
+        download_workflow "$VAR"
+    done
+
+    # provisioning workflows VRAM independent
+    for i in $(seq 1 50); do
+        VAR="WORKFLOW${i}"
+        download_workflow "$VAR"
+    done
+	
+	# provisioning input media for test/tutorial purpose
+    echo "📥 Provisioning input media"
+	
+    for i in $(seq 1 50); do
+        VAR="MEDIA${i}"
+        download_media "$VAR"
     done
 	
     HAS_PROVISIONING=1
@@ -502,6 +541,8 @@ except Exception as e2:
     print("Failed:", e2)
 PY
 
+echo "ℹ️ Connections and/or diagnostic information"
+
 if [[ "$HAS_PROVISIONING" -eq 1 ]]; then 
     echo "🎉 Provisioning done, ready to create AI content 🎉"
 		
@@ -544,8 +585,6 @@ if [[ "$HAS_PROVISIONING" -eq 1 ]]; then
 		cat /root/.config/code-server/config.yaml        
     fi	
 else
-    echo "ℹ️ Running error diagnosis"
-
     if [[ "$HAS_GPU_RUNPOD" -eq 0 ]]; then
         echo "⚠️ Pod started without a runpod GPU"
     fi
