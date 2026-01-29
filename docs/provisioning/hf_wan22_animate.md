@@ -75,3 +75,15 @@ hf download Comfy-Org/Wan_2.2_ComfyUI_Repackaged split_files/loras/wan2.2_animat
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_relight/WanAnimate_relight_lora_fp16.safetensors \
 --local-dir /workspace/ComfyUI/models/loras/
 ```
+
+## Extra Loras
+
+```bash
+hf download Kijai/WanVideo_comfy FastWan/FastWan_T2V_14B_480p_lora_rank_128_bf16.safetensors \
+--local-dir=/workspace/ComfyUI/models/loras
+```
+
+```bash
+hf download Kijai/WanVideo_comfy Pusa/Wan21_PusaV1_LoRA_14B_rank512_bf16.safetensors \
+--local-dir=/workspace/ComfyUI/models/loras
+```

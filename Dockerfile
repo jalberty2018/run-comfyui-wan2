@@ -106,8 +106,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-SAM3/requirements.txt
 
 # Activate SAM3
-WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
-RUN python install.py
+# WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
+# RUN git fetch --unshallow && git checkout a5e2ceb66d95dc74151669ef83f594265ed62caa
+# RUN python install.py
 
 # Own custom_nodes (local)
 WORKDIR /ComfyUI/custom_nodes
