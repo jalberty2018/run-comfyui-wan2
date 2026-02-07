@@ -75,14 +75,6 @@ unzip      # uncompress
 runpodctl  # runpod pod management
 ```
 
-## Comfy-cli
-
-```bash
-comfy-cli set-default /workspace/ComfyUI/
-comfy-cli
-comfy-cli env
-```
-
 ## Test/debug
 
 ```bash

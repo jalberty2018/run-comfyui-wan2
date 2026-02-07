@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:27012026
+FROM ls250824/comfyui-runtime:03022026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -68,6 +68,7 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/SeanScripts/ComfyUI-Unload-Model.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/Windecay/ComfyUI_Dynamic-RAMCache.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterMultiF2V.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git
 	
 # triton-windows error
@@ -80,6 +81,10 @@ RUN set -eux; \
       [ -f "$f" ] || continue; \
       sed -i -E 's/^( *| *)(onnxruntime)([<>=].*)?(\s*)$/\1onnxruntime-gpu==1.22.*\4/i' "$f"; \
     done
+
+# Pixi problem SAM3
+RUN sed -i '/^comfy-env/d' /ComfyUI/custom_nodes/ComfyUI-SAM3/requirements.txt
+RUN sed -i '/^comfy-test/d' /ComfyUI/custom_nodes/ComfyUI-SAM3/requirements.txt
 
 # Install Dependencies for Cloned Repositories
 WORKDIR /ComfyUI/custom_nodes
@@ -103,7 +108,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-outputlists-combiner/requirements.txt \
 	-r ComfyUI-SCAIL-Pose/requirements.txt \
 	-r ComfyUI-WanAnimatePreprocess/requirements.txt \
-	-r ComfyUI-SAM3/requirements.txt
+	-r ComfyUI-Lora-Manager/requirements.txt \
+    -r ComfyUI-SAM3/requirements.txt
 
 # Activate SAM3
 # WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
@@ -113,6 +119,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Own custom_nodes (local)
 WORKDIR /ComfyUI/custom_nodes
 COPY --chmod=755 nodes/ ComfyUI-JANodes
+
+# Add settings for lora manager 
+WORKDIR /ComfyUI/custom_nodes/ComfyUI-Lora-Manager
+COPY --chmod=644 /configuration/lora-manager-settings.json settings.json.template
 
 # Set Working Directory
 WORKDIR /
@@ -146,7 +156,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.11.0 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.12.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"

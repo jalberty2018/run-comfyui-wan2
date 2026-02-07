@@ -22,13 +22,13 @@ fi
 
 # Move necessary files to workspace
 echo "ℹ️ [Moving necessary files to workspace] enabling Start/Stop/Restart pod without data loss."
-echo "ℹ️ This takes some time on slower processors, longer if the volume is encrypted."    
+echo "ℹ️ This takes some time depending on hardware used, even longer if the volume is encrypted, have patience."    
 for script in comfyui-on-workspace.sh files-on-workspace.sh test-on-workspace.sh docs-on-workspace.sh; do
     if [ -f "/$script" ]; then
         echo "Executing $script..."
         "/$script"
     else
-        echo "⚠️ WARNING: Skipping $script (not found)"
+        echo "⚠️ BUG: Skipping $script (not found)"
     fi
 done
 
@@ -103,20 +103,38 @@ fi
 # Start ComfyUI (HTTP port 8188)
 HAS_COMFYUI=0
 
-if [[ "$HAS_CUDA" -eq 1 ]]; then  	
+if [[ "$HAS_CUDA" -eq 1 ]]; then
+
+    SETTINGS_DIR="/workspace/ComfyUI/custom_nodes/ComfyUI-Lora-Manager"
+	SETTINGS_FILE="$SETTINGS_DIR/settings.json"
+	TEMPLATE_FILE="$SETTINGS_DIR/settings.json.template"
+	
+	mkdir -p "$SETTINGS_DIR"
+	
+	if [[ -n "${CIVITAI_TOKEN:-}" ]]; then
+	    echo "ℹ️ Injecting CIVITAI_TOKEN into ComfyUI-Lora-Manager"
+	
+	    jq --arg token "$CIVITAI_TOKEN" \
+	       '.civitai_api_key = $token' \
+	       "$TEMPLATE_FILE" > "$SETTINGS_FILE"
+	else
+	    echo "⚠️ CIVITAI_TOKEN not set – Insert your token manually in ComfyUI-Lora-Manager"
+	fi
+	
    	echo "▶️ ComfyUI service starting (CUDA available)"
 	    
     python3 /workspace/ComfyUI/main.py ${COMFYUI_EXTRA_ARGUMENTS:---listen --enable-manager --preview-method latent2rgb} &
 
     # Wait until ComfyUI is ready
-    MAX_TRIES=40
+    MAX_TRIES="${COMFYUI_START_MAX_TRIES:-60}"
     COUNT=0
 		
     until curl -s http://127.0.0.1:8188 > /dev/null; do
         COUNT=$((COUNT+1))
 
         if [[ $COUNT -ge $MAX_TRIES ]]; then
-            echo "⚠️  WARNING: ComfyUI is still not responding after $MAX_TRIES attempts (~1 min)."
+            echo "⚠️  WARNING: ComfyUI is still not responding after $MAX_TRIES attempts (~2 min)."
+            echo "⚠️  SOLUTION: Use another region then $RUNPOD_DC_ID as vCPU speed is slow (normal count is around 20)"
             echo "⚠️  Continuing script anyway..."
             break
         fi
@@ -575,6 +593,8 @@ if [[ "$HAS_PROVISIONING" -eq 1 ]]; then
 	        echo "❌ ${service} not responding yet (local ${local_url}, HTTP ${http_code})"
 	      fi
 	    done
+
+        echo "👉 🔗 Lora-Manager: https://${RUNPOD_POD_ID}-8188.proxy.runpod.net/loras"
 	  fi
 	fi
 	
