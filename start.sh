@@ -22,7 +22,7 @@ fi
 
 # Move necessary files to workspace
 echo "ℹ️ [Moving necessary files to workspace] enabling Start/Stop/Restart pod without data loss."
-echo "ℹ️ This takes some time depending on hardware used, even longer if the volume is encrypted, have patience."    
+echo "ℹ️ This takes some time depending on hardware used, even longer if the volume is encrypted."    
 for script in comfyui-on-workspace.sh files-on-workspace.sh test-on-workspace.sh docs-on-workspace.sh; do
     if [ -f "/$script" ]; then
         echo "Executing $script..."
