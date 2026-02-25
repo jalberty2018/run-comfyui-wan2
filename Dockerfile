@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:11022026
+FROM ls250824/comfyui-runtime:25022026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -69,7 +69,8 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/Windecay/ComfyUI_Dynamic-RAMCache.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterMultiF2V.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git
+	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git
 	
 # triton-windows error
 # RUN cd ComfyUI-RMBG && git fetch --unshallow && git checkout 9ecda2e689d72298b4dca39403a85d13e53ea659
@@ -156,7 +157,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.13.0 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.15.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"

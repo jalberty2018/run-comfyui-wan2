@@ -374,6 +374,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
       "SAMS:SAMS_FILENAME:sams"
       "LATENT_UPSCALE:LATENT_UPSCALE_FILENAME:latent_upscale_models"
       "VAE_APPROX:VAE_APPROX_FILENAME:vae_approx"
+      "CONTROLNET:CONTROLNET_FILENAME:controlnet"
     )
 	
     # Huggingface download file depending on VRAM available to specified directory
