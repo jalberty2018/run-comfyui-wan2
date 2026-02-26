@@ -170,10 +170,25 @@ download_model_HF() {
 
     echo "ℹ️ [DOWNLOAD] Fetching $model + $file → $target"
 
-    if ! hf download "$model" "$file" --local-dir "$target" >/dev/null 2>&1; then
-        echo "⚠️ HF download failed"
+    hf download "$model" "$file" --local-dir "$target" 
+    local rc=$?
+
+    # ----------- SUCCESS ----------
+    if [[ $rc -eq 0 ]]; then
+        echo "✅ HF download completed"
+        sleep 1
+        return 0
     fi
 
+    # ---- SEGFAULT AFTER SUCCESS ---
+    if [[ $rc -eq 139 && -f "$target/$file" ]]; then
+        echo "⚠️ HF segfault after download (file exists → OK)"
+        sleep 1
+        return 0
+    fi
+
+    # -------- REAL FAILURE --------
+    echo "❌ HF download failed (exit=$rc)"
     sleep 1
     return 0
 }
@@ -198,16 +213,30 @@ download_generic_HF() {
 
     if [[ -n "$file" ]]; then
         echo "ℹ️ [DOWNLOAD] Fetching $model/$file → $target"
-        hf download "$model" "$file" --local-dir "$target" >/dev/null 2>&1 || status="fail"
+        hf download "$model" "$file" --local-dir "$target"
+        local rc=$?
     else
         echo "ℹ️ [DOWNLOAD] Fetching $model → $target"
-        hf download "$model" --local-dir "$target" >/dev/null 2>&1 || status="fail"
+        hf download "$model" --local-dir "$target"
+        local rc=$?
     fi
 
-    if [[ "$status" == "fail" ]]; then
-        echo "⚠️ HF download generic failed: $model/$file/$target "
+    # ----------- SUCCESS ----------
+    if [[ $rc -eq 0 ]]; then
+        echo "✅ HF download completed"
+        sleep 1
+        return 0
     fi
 
+    # ---- SEGFAULT AFTER SUCCESS ---
+    if [[ $rc -eq 139 && -f "$target/$file" ]]; then
+        echo "⚠️ HF segfault after download (file exists → OK)"
+        sleep 1
+        return 0
+    fi
+
+    # -------- REAL FAILURE --------
+    echo "❌ HF download failed (exit=$rc)"
     sleep 1
     return 0
 }

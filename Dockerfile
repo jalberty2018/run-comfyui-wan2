@@ -70,8 +70,9 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterMultiF2V.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git
-	
+	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git
+
 # triton-windows error
 # RUN cd ComfyUI-RMBG && git fetch --unshallow && git checkout 9ecda2e689d72298b4dca39403a85d13e53ea659
 
@@ -92,7 +93,7 @@ WORKDIR /ComfyUI/custom_nodes
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   python -m pip install --no-cache-dir --root-user-action ignore -c /constraints.txt \
-    diffusers psutil \
+    diffusers psutil pydantic pydantic-settings \
     -r ComfyUI-Login/requirements.txt \
     -r ComfyUI-VideoHelperSuite/requirements.txt \
     -r ComfyUI-KJNodes/requirements.txt \
@@ -110,7 +111,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-SCAIL-Pose/requirements.txt \
 	-r ComfyUI-WanAnimatePreprocess/requirements.txt \
 	-r ComfyUI-Lora-Manager/requirements.txt \
-    -r ComfyUI-SAM3/requirements.txt
+    -r ComfyUI-SAM3/requirements.txt \
+    -r ComfyUI-QwenVL-Mod/requirements.txt 
 
 # Activate SAM3
 # WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
