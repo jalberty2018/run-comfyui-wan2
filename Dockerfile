@@ -73,6 +73,10 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git
 
+# Use working version
+WORKDIR /ComfyUI/custom_nodes/ComfyUI-QwenVL-Mod
+RUN git fetch --unshallow && git checkout 9cd567191c606a51e14fd5f612c6974a262eb04a
+
 # triton-windows error
 # RUN cd ComfyUI-RMBG && git fetch --unshallow && git checkout 9ecda2e689d72298b4dca39403a85d13e53ea659
 
