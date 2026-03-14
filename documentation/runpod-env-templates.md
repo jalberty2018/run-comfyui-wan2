@@ -37,11 +37,10 @@ HF_MODEL_LORA9=lightx2v/Wan2.2-Lightning
 HF_MODEL_LORA_FILENAME9=Wan2.2-T2V-A14B-4steps-lora-250928/high_noise_model.safetensors
 HF_MODEL_LORA10=lightx2v/Wan2.2-Lightning
 HF_MODEL_LORA_FILENAME10=Wan2.2-T2V-A14B-4steps-lora-250928/low_noise_model.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeKSampler-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeSamplerAdv-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-t2v-TripleKSampler-pod.json
-WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampler-pod.json
-WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeSamplerAdv-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-t2v-TripleKSampler-pod.json
+WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampler-pod.json
+WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
 ```
 
 #### Private with lighning
@@ -60,10 +59,6 @@ HF_MODEL_TEXT_ENCODERS1=LS110824/text_encoders
 HF_MODEL_TEXT_ENCODERS_FILENAME1=wan21UMT5XxlFP32_fp32.safetensors
 HF_MODEL_UPSCALER1=LS110824/upscale
 HF_MODEL_UPSCALER_PTH1=4x_foolhardy_Remacri.pth
-HF_MODEL_LORA1=lightx2v/Wan2.2-Lightning
-HF_MODEL_LORA_FILENAME1=Wan2.2-T2V-A14B-4steps-lora-250928/high_noise_model.safetensors
-HF_MODEL_LORA2=lightx2v/Wan2.2-Lightning
-HF_MODEL_LORA_FILENAME2=Wan2.2-T2V-A14B-4steps-lora-250928/low_noise_model.safetensors
 HF_MODEL_LORA3=LS110824/Wan22_lora
 HF_MODEL_LORA_FILENAME3=Wan2.2-T2V-AgeSlider-14B_high_noise.safetensors
 HF_MODEL_LORA4=LS110824/Wan22_lora
@@ -72,10 +67,6 @@ HF_MODEL_LORA5=LS110824/Wan22_lora
 HF_MODEL_LORA_FILENAME5=Wan2.2-T2V-BodySizeSliderv2-HIGH14B.safetensors
 HF_MODEL_LORA6=LS110824/Wan22_lora
 HF_MODEL_LORA_FILENAME6=Wan2.2-T2V-BodySizeSliderv2-LOW14B.safetensors
-HF_MODEL_LORA7=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME7=Wan2.2-T2V-SameFaceFixv2-HIGH14B.safetensors
-HF_MODEL_LORA8=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME8=Wan2.2-T2V-SameFaceFixv2-LOW14B.safetensors
 HF_MODEL_LORA9=LS110824/Wan22_lora
 HF_MODEL_LORA_FILENAME9=wan_2.2_t2v_highnoise_broken_v1.0.safetensors
 HF_MODEL_LORA10=LS110824/Wan22_lora
@@ -84,11 +75,8 @@ HF_MODEL_LORA11=lightx2v/Wan2.2-Distill-Loras
 HF_MODEL_LORA_FILENAME11=wan2.2_t2v_A14b_high_noise_lora_rank64_lightx2v_4step_1217.safetensors
 HF_MODEL_LORA12=lightx2v/Wan2.2-Distill-Loras
 HF_MODEL_LORA_FILENAME12=wan2.2_t2v_A14b_low_noise_lora_rank64_lightx2v_4step_1217.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeKSampler-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeSamplerAdv-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-t2v-TripleKSampler-pod.json
-WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampler-pod.json
-WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampler-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
 ```
 
 ### Dyno
@@ -150,12 +138,10 @@ HF_MODEL_LORA_FILENAME5=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4ste
 HF_MODEL1=VeryAladeen/Sec-4B
 HF_MODEL_FILENAME1=SeC-4B-fp16.safetensors
 HF_MODEL_DIR1=models/sams
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-TripleKSampler-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-TripleKSampler-pod.json
-WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
-WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
-WORKFLOW6=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
+WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
+WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
 ```
 #### Private
 
@@ -185,12 +171,10 @@ HF_MODEL_LORA4=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME4=LoRAs/Stable-Video-Infinity/v2.0/SVI_v2_PRO_Wan2.2-I2V-A14B_LOW_lora_rank_128_fp16.safetensors
 HF_MODEL_LORA5=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME5=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_v1030_rank_64_bf16.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-TripleKSampler-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-TripleKSampler-pod.json
-WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
-WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
-WORKFLOW6=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
+WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
+WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
 ```
 
 ### animate (lightning)
