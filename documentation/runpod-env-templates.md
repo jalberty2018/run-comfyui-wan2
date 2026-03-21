@@ -142,6 +142,7 @@ WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.
 WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
 WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
 WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
+WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-longvideo-pod.json
 ```
 #### Private
 
@@ -175,6 +176,7 @@ WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.
 WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
 WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
 WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
+WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-longvideo-pod.json
 ```
 
 ### animate (lightning)
