@@ -75,6 +75,10 @@ HF_MODEL_LORA11=lightx2v/Wan2.2-Distill-Loras
 HF_MODEL_LORA_FILENAME11=wan2.2_t2v_A14b_high_noise_lora_rank64_lightx2v_4step_1217.safetensors
 HF_MODEL_LORA12=lightx2v/Wan2.2-Distill-Loras
 HF_MODEL_LORA_FILENAME12=wan2.2_t2v_A14b_low_noise_lora_rank64_lightx2v_4step_1217.safetensors
+HF_MODEL_LORA13=lightx2v/Wan2.2-Lightning
+HF_MODEL_LORA_FILENAME13=Wan2.2-T2V-A14B-4steps-lora-250928/high_noise_model.safetensors
+HF_MODEL_LORA14=lightx2v/Wan2.2-Lightning
+HF_MODEL_LORA_FILENAME14=Wan2.2-T2V-A14B-4steps-lora-250928/low_noise_model.safetensors
 WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampler-pod.json
 WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
 ```
