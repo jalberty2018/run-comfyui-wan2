@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:24032026
+FROM ls250824/comfyui-runtime:13042026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -36,7 +36,6 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/stduhpf/ComfyUI-WanMoeKSampler.git && \
     git clone --depth=1 --filter=blob:none https://github.com/Azornes/Comfyui-Resolution-Master.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/ssitu/ComfyUI_UltimateSDUpscale --recursive && \
-	git clone --depth=1 --filter=blob:none https://github.com/WASasquatch/was_affine.git && \
     git clone --depth=1 --filter=blob:none https://github.com/VraethrDalkr/ComfyUI-TripleKSampler.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-segment-anything-2.git && \
     git clone --depth=1 --filter=blob:none https://github.com/1038lab/ComfyUI-RMBG.git && \
@@ -169,7 +168,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.18.1 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.19.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"

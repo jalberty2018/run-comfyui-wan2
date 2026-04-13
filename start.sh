@@ -24,7 +24,7 @@ fi
 mkdir -p /workspace/output/
 
 # Set optimizations
-# export PYTORCH_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.8
+export PYTORCH_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.8
 
 # GPU detection
 echo "ℹ️ Testing GPU/CUDA provisioning"
@@ -101,6 +101,67 @@ PY
   fi
 else
   echo "⚠️ Python not found – assuming no CUDA"
+fi
+
+download_model_CIVITAI() {
+    local url_var="$1"
+    local dest_dir="$2"
+
+    if [[ -z "${!url_var}" ]]; then
+        return 0
+    fi
+
+    local target="/workspace/ComfyUI/models/$dest_dir"
+    mkdir -p "$target"
+
+    local url="${!url_var}"
+
+    if [[ -z "$CIVITAI_TOKEN" ]]; then
+        echo "⚠️ ERROR: CIVITAI_TOKEN is not set '$url' not downloaded"
+        return 1
+    fi
+
+    local filename
+    filename="$(basename "$(printf '%s\n' "$url" | sed 's/[?#].*$//')")"
+
+    if [[ "$filename" == "download" || "$filename" == "models" || -z "$filename" ]]; then
+        filename=""
+    fi
+
+    if [[ -n "$filename" ]] && compgen -G "$target/$filename*" > /dev/null; then
+        echo "✅ [SKIP] $filename already exists in $target"
+        return 0
+    fi
+
+    echo "ℹ️ [DOWNLOAD] Fetching $url → $target ..."
+    
+    civitai --quit "$url" "$target" || {
+        echo "⚠️ Failed to download $url"
+        return 1
+    }
+
+    sleep 1
+    return 0
+}
+
+if [[ "$HAS_CUDA" -eq 1 ]]; then
+	# provisioning Models and loras CIVITAI
+    echo "📥 Provisioning models CIVITAI"
+	
+    # categorie: NAME:MAP	
+    CATEGORIES_CIVITAI=(
+       "LORA_URL:loras"
+	   "UNET_URL:diffusion_models"
+    )
+
+    for cat in "${CATEGORIES_CIVITAI[@]}"; do
+      IFS=":" read -r NAME DIR <<< "$cat"
+	
+      for i in $(seq 1 50); do
+        VAR1="CIVITAI_MODEL_${NAME}${i}"
+        download_model_CIVITAI "$VAR1" "$DIR"
+      done
+    done
 fi
 
 # Start ComfyUI (HTTP port 8188)
@@ -240,47 +301,6 @@ download_generic_HF() {
 
     # -------- REAL FAILURE --------
     echo "❌ HF download failed (exit=$rc)"
-    sleep 1
-    return 0
-}
-
-download_model_CIVITAI() {
-    local url_var="$1"
-    local dest_dir="$2"
-
-    if [[ -z "${!url_var}" ]]; then
-        return 0
-    fi
-
-    local target="/workspace/ComfyUI/models/$dest_dir"
-    mkdir -p "$target"
-
-    local url="${!url_var}"
-
-    if [[ -z "$CIVITAI_TOKEN" ]]; then
-        echo "⚠️ ERROR: CIVITAI_TOKEN is not set '$url' not downloaded"
-        return 1
-    fi
-
-    local filename
-    filename="$(basename "$(printf '%s\n' "$url" | sed 's/[?#].*$//')")"
-
-    if [[ "$filename" == "download" || "$filename" == "models" || -z "$filename" ]]; then
-        filename=""
-    fi
-
-    if [[ -n "$filename" ]] && compgen -G "$target/$filename*" > /dev/null; then
-        echo "✅ [SKIP] $filename already exists in $target"
-        return 0
-    fi
-
-    echo "ℹ️ [DOWNLOAD] Fetching $url → $target ..."
-    
-    civitai --quit "$url" "$target" || {
-        echo "⚠️ Failed to download $url"
-        return 1
-    }
-
     sleep 1
     return 0
 }
@@ -471,24 +491,6 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
         download_generic_HF "${VAR1}" "" "${!DIR_VAR}"
     done  
 	 
-    # provisioning Models and loras CIVITAI
-    echo "📥 Provisioning models CIVITAI"
-	
-    # categorie: NAME:MAP	
-    CATEGORIES_CIVITAI=(
-       "LORA_URL:loras"
-	   "UNET_URL:diffusion_models"
-    )
-
-    for cat in "${CATEGORIES_CIVITAI[@]}"; do
-      IFS=":" read -r NAME DIR <<< "$cat"
-	
-      for i in $(seq 1 50); do
-        VAR1="CIVITAI_MODEL_${NAME}${i}"
-        download_model_CIVITAI "$VAR1" "$DIR"
-      done
-    done
-
     echo "📥 Provisioning workflows"
 
     # provisioning workflows VRAM dependent
@@ -645,7 +647,7 @@ else
     if [[ "$HAS_CUDA" -eq 0 ]]; then
         echo "❌ Pytorch CUDA driver error/mismatch/not available"
         if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
-            echo "⚠️ [SOLUTION 1] Deploy pod on another region then $RUNPOD_DC_ID. ⚠️"
+            echo "⚠️ [SOLUTION 1] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown}. ⚠️"
 			echo "⚠️ [SOLUTION 2] Specify CUDA 12.8 using the runpod console filter. ⚠️"
         fi
     fi
@@ -653,7 +655,7 @@ else
     if [[ "$HAS_CUDA" -eq 1 && "$HAS_COMFYUI" -eq 0 ]]; then
         echo "❌ ComfyUI is not online (extreme slow vCPU's)"
         echo "⚠️ [SOLUTION 1] restart pod ⚠️"
-		echo "⚠️ [SOLUTION 2] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown} ⚠️"
+		echo "⚠️ [SOLUTION 2] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown}. ⚠️"
     fi
 fi
 
