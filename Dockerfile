@@ -70,12 +70,10 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git
+	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/ethanfel/ComfyUI-LoRA-Optimizer.git
 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-RMBG
-# triton-windows error
-# RUN cd ComfyUI-RMBG && git fetch --unshallow && git checkout 9ecda2e689d72298b4dca39403a85d13e53ea659
-
 # Rewrite any top-level CPU ORT refs to GPU ORT
 RUN set -eux; \
   for f in \
@@ -88,13 +86,15 @@ RUN set -eux; \
   grep -RniE '^[[:space:]]*onnxruntime([[:space:]]*[<>=!~].*)?[[:space:]]*$|^[[:space:]]*onnxruntime-gpu([[:space:]]*[<>=!~].*)?[[:space:]]*$' \
     /ComfyUI/custom_nodes || true
 
-# Pixi problem SAM3
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
+# Working version for SAM3 (comfy-env problems)
+RUN git fetch --unshallow && git checkout 5c0474e292e3658645f46e46378d58935a82692f
+# Pixi problem SAM3
 RUN sed -i '/^comfy-env/d' requirements.txt
 RUN sed -i '/^comfy-test/d' requirements.txt
 
-# Use working version
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-QwenVL-Mod
+# Use working version
 RUN git fetch --unshallow && git checkout 9cd567191c606a51e14fd5f612c6974a262eb04a
 
 # Install Dependencies for Cloned Repositories
