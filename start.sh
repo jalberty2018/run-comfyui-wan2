@@ -613,7 +613,7 @@ if [[ "$HAS_PROVISIONING" -eq 1 ]]; then
 	    # Local health checks (inside the pod)
 	    for service in "${!SERVICES[@]}"; do
 	      port="${SERVICES[$service]}"
-	      url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/"
+	      url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/login"
 	      local_url="http://127.0.0.1:${port}/"
 	
 	      echo "👉 🔗 Service ${service} : ${url}"
