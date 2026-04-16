@@ -23,7 +23,7 @@
 ### Deployment/Usage information
 
 - All available templates on runpod are tested on a L40S / RTX A6000 Ada / A40.
-- Avoid pods without region they are unstable.
+
 
 ### Runpod
 
@@ -49,6 +49,8 @@
 ### Templates to generate/edit images
 
 - 👉 [Runpod Z-Image Base and Turbo](https://console.runpod.io/deploy?template=ia5t70hfak&ref=se4tkc5o)
+
+- 👉 [Runpod ERNIE-Image Base and Turbo](https://console.runpod.io/deploy?template=g8ow1s1s0a&ref=se4tkc5o)
 
 - 👉 [Runpod Flux.2 Dev](https://console.runpod.io/deploy?template=8nl523gts5&ref=se4tkc5o)
 - 👉 [Runpod Flux.2 Klein](https://console.runpod.io/deploy?template=n1wa3lb44l&ref=se4tkc5o)
@@ -108,6 +110,6 @@
 
 | Recommended GPU          | VRAM  | RAM   |
 |--------------------------|-------|-------|
-| L40S, RTX 6000 (Ada)     | 40Gb | 105Gb | 
+| L40S, RTX 6000 Ada    | 40Gb | 105Gb | 
 
 
