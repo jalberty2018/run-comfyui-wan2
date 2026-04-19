@@ -18,49 +18,30 @@
 
 - If the image is **less then one day old** it is possible that it is not tested or will be updated.
 
-## Template Deployment
+## Template deployment Runpod
 
 ### Deployment/Usage information
 
-- All available templates on runpod are tested on a L40S / RTX A6000 Ada / A40.
+- Tested on a L40S / RTX A6000 Ada / A40.
 
+### Templates Runpod
 
-### Runpod
-
-- Use L40S or RTX6000 Ada as GPU.
 - Specific models/loras/workflows for the templates are downloaded when the pod starts.
-- See the [tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/) for the available features.
 
 ### Templates
 
-[**👉 One-click Deploy on RunPod WAN 2.2 t2v (lightx2v)**](https://console.runpod.io/deploy?template=qvozvvb1xd&ref=se4tkc5o)
+[**👉 One-click Deploy WAN 2.2 t2v (lightx2v)**](https://console.runpod.io/deploy?template=qvozvvb1xd&ref=se4tkc5o)
 
-[**👉 One-click Deploy on RunPod WAN 2.2 i2v + SVI v2 PRO (lightx2v)**](https://console.runpod.io/deploy?template=moem21s8xb&ref=se4tkc5o)
+[**👉 One-click Deploy WAN 2.2 i2v + SVI v2 PRO (lightx2v)**](https://console.runpod.io/deploy?template=moem21s8xb&ref=se4tkc5o)
 
-[**👉 One-click Deploy on RunPod WAN 2.2 animate (lightx2v)**](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o)
+[**👉 One-click Deploy WAN 2.2 animate (lightx2v)**](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o)
 
-[**👉 One-click Deploy on Runpod WAN SCAIL VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
+[**👉 One-click Deploy SCAIL VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
 
-## Documentation
+### Documentation
 
 - [Start](https://comfyui.rozenlaan.site/ComfyUI_WAN/)
 - [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
-
-### Templates to generate/edit images
-
-- 👉 [Runpod Z-Image Base and Turbo](https://console.runpod.io/deploy?template=ia5t70hfak&ref=se4tkc5o)
-
-- 👉 [Runpod ERNIE-Image Base and Turbo](https://console.runpod.io/deploy?template=g8ow1s1s0a&ref=se4tkc5o)
-
-- 👉 [Runpod Flux.2 Dev](https://console.runpod.io/deploy?template=8nl523gts5&ref=se4tkc5o)
-- 👉 [Runpod Flux.2 Klein](https://console.runpod.io/deploy?template=n1wa3lb44l&ref=se4tkc5o)
-
-- 👉 [Runpod Qwen image 2512](https://console.runpod.io/deploy?template=3fri17sxaa&ref=se4tkc5o)
-- 👉 [Runpod Qwen image edit 2511](https://console.runpod.io/deploy?template=mxvvx0hcmp&ref=se4tkc5o)
-
-### Template video model with sound generation
-
-- 👉[RunPod LTX-2 dev](https://console.runpod.io/deploy?template=p4f6rm9tb4&ref=se4tkc5o)
 
 ##  Hardware Requirements
 
@@ -113,3 +94,7 @@
 | L40S, RTX 6000 Ada    | 40Gb | 105Gb | 
 
 
+## Other available pods
+
+- [Image models](https://comfyui.rozenlaan.site/ComfyUI_image/)
+- [LTX 2.3](https://comfyui.rozenlaan.site/ComfyUI_LTX/)
