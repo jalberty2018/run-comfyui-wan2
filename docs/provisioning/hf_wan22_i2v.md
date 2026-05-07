@@ -7,6 +7,7 @@
 - [Lightx2v](https://huggingface.co/lightx2v/)
 - [Lightx2v Distill](https://huggingface.co/lightx2v/Wan2.2-Distill-Loras)
 - [Stable video infinity](https://huggingface.co/vita-video-gen/svi-model)
+- [Kijai lightx2v](https://huggingface.co/Kijai/WanVideo_comfy/tree/main/LoRAs/Wan22_Lightx2v)
 
 ## Diffusion model
 
@@ -155,4 +156,22 @@ hf download lightx2v/Wan2.2-Distill-Loras wan2.2_i2v_A14b_low_noise_lora_rank64_
 ```bash
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_v1030_rank_64_bf16.safetensors \
 --local-dir=/workspace/ComfyUI/models/loras/
+```
+
+#### 260412
+
+```bash
+hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_256_fp16.safetensors \
+—local-dir=/workspace/ComfyUI/models/loras/
+
+hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_256_fp16.safetensors \
+—local-dir=/workspace/ComfyUI/models/loras/
+```
+
+```bash
+hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_64_fp16.safetensors \
+—local-dir=/workspace/ComfyUI/models/loras/
+
+hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_64_fp16.safetensors \
+—local-dir=/workspace/ComfyUI/models/loras/
 ```

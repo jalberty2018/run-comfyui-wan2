@@ -128,7 +128,9 @@ HF_MODEL_LORA_FILENAME3=LoRAs/Stable-Video-Infinity/v2.0/SVI_v2_PRO_Wan2.2-I2V-A
 HF_MODEL_LORA4=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME4=LoRAs/Stable-Video-Infinity/v2.0/SVI_v2_PRO_Wan2.2-I2V-A14B_LOW_lora_rank_128_fp16.safetensors
 HF_MODEL_LORA5=Kijai/WanVideo_comfy
-HF_MODEL_LORA_FILENAME5=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_v1030_rank_64_bf16.safetensors
+HF_MODEL_LORA_FILENAME5=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_64_fp16.safetensors
+HF_MODEL_LORA6=Kijai/WanVideo_comfy
+HF_MODEL_LORA_FILENAME6=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_64_fp16.safetensors
 HF_MODEL1=VeryAladeen/Sec-4B
 HF_MODEL_FILENAME1=SeC-4B-fp16.safetensors
 HF_MODEL_DIR1=models/sams
@@ -243,6 +245,8 @@ WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-
 
 ### s2v
 
+#### private
+
 ```bash
 CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"
 HF_TOKEN="{{ RUNPOD_SECRET_HF_TOKEN_WRITE }}"
@@ -277,7 +281,9 @@ HF_MODEL_LORA1=Kijai/LongCat-Video_comfy
 HF_MODEL_LORA_FILENAME1=LongCat_distill_lora_alpha64_bf16.safetensors
 ```
 
-### v2v Lucy Edit 
+### v2v Lucy Edit
+
+#### private
 
 ```bash
 CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"

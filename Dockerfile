@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:13042026
+FROM ls250824/comfyui-runtime:28042026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -47,7 +47,7 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced && \
 	git clone --depth=1 --filter=blob:none https://github.com/x3bits/ComfyUI-Power-Flow.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/9nate-drake/Comfyui-SecNodes.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/jalberty2018/IAMCCS-nodes.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/IAMCCS/IAMCCS-nodes.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/cmeka/ComfyUI-WanMoEScheduler.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/wallen0322/ComfyUI-WanAnimate-Enhancer.git  && \
 	git clone --depth=1 --filter=blob:none https://github.com/wallen0322/ComfyUI-Wan22FMLF.git && \
@@ -71,7 +71,9 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/ethanfel/ComfyUI-LoRA-Optimizer.git
+	git clone --depth=1 --filter=blob:none https://github.com/ethanfel/ComfyUI-LoRA-Optimizer.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/WASasquatch/was_affine.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-PromptRelay.git
 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-RMBG
 # Rewrite any top-level CPU ORT refs to GPU ORT
@@ -97,12 +99,20 @@ WORKDIR /ComfyUI/custom_nodes/ComfyUI-QwenVL-Mod
 # Use working version
 RUN git fetch --unshallow && git checkout 9cd567191c606a51e14fd5f612c6974a262eb04a
 
-# Install Dependencies for Cloned Repositories
-WORKDIR /ComfyUI/custom_nodes
+WORKDIR /ComfyUI/custom_nodes/IAMCCS-nodes
+# Use version without errors
+RUN git fetch --unshallow && git checkout d11592ca6b7550877ca048e8a7d6eb37e331ade2
 
+WORKDIR /
+# Install Dependencies global
 RUN --mount=type=cache,target=/root/.cache/pip \
   python -m pip install --no-cache-dir --root-user-action ignore -c /constraints.txt \
-    diffusers psutil pydantic pydantic-settings \
+  diffusers psutil pydantic pydantic-settings
+
+# Install Dependencies for Cloned Repositories
+WORKDIR /ComfyUI/custom_nodes
+RUN --mount=type=cache,target=/root/.cache/pip \
+  python -m pip install --no-cache-dir --root-user-action ignore -c /constraints.txt \
     -r ComfyUI-Login/requirements.txt \
     -r ComfyUI-VideoHelperSuite/requirements.txt \
     -r ComfyUI-KJNodes/requirements.txt \
@@ -123,22 +133,16 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     -r ComfyUI-SAM3/requirements.txt \
     -r ComfyUI-QwenVL-Mod/requirements.txt 
 
-# Activate SAM3
-# WORKDIR /ComfyUI/custom_nodes/ComfyUI-SAM3
-# RUN git fetch --unshallow && git checkout a5e2ceb66d95dc74151669ef83f594265ed62caa
-# RUN python install.py
-
-# Own custom_nodes (local)
 WORKDIR /ComfyUI/custom_nodes
+# Own custom_nodes (local)
 COPY --chmod=755 nodes/ ComfyUI-JANodes
 
-# Add settings for lora manager 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-Lora-Manager
+# Add settings for lora manager 
 COPY --chmod=644 /configuration/lora-manager-settings.json settings.json.template
 
-# Set Working Directory
-WORKDIR /
 
+WORKDIR /
 # Clone documentation repo into /comfyui-docs
 RUN --mount=type=cache,target=/root/.cache/git \
     git clone --depth=1 --filter=blob:none https://github.com/jalberty2018/comfyui-docs.git /comfyui-docs
@@ -168,7 +172,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.19.0 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.20.1 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"
