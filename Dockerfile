@@ -73,7 +73,8 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/ethanfel/ComfyUI-LoRA-Optimizer.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/WASasquatch/was_affine.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-PromptRelay.git
+	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-PromptRelay.git && \
+    git clone --depth=1 --filter=blob:none https://github.com/yolain/ComfyUI-Easy-Use.git
 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-RMBG
 # Rewrite any top-level CPU ORT refs to GPU ORT
@@ -131,7 +132,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-WanAnimatePreprocess/requirements.txt \
 	-r ComfyUI-Lora-Manager/requirements.txt \
     -r ComfyUI-SAM3/requirements.txt \
-    -r ComfyUI-QwenVL-Mod/requirements.txt 
+    -r ComfyUI-QwenVL-Mod/requirements.txt \
+    -r ComfyUI-Easy-Use/requirements.txt
 
 WORKDIR /ComfyUI/custom_nodes
 # Own custom_nodes (local)
@@ -140,7 +142,6 @@ COPY --chmod=755 nodes/ ComfyUI-JANodes
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-Lora-Manager
 # Add settings for lora manager 
 COPY --chmod=644 /configuration/lora-manager-settings.json settings.json.template
-
 
 WORKDIR /
 # Clone documentation repo into /comfyui-docs
@@ -172,7 +173,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.20.1 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.21.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"
