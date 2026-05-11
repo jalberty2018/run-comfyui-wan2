@@ -100,6 +100,10 @@ WORKDIR /ComfyUI/custom_nodes/ComfyUI-QwenVL-Mod
 # Use working version
 RUN git fetch --unshallow && git checkout 9cd567191c606a51e14fd5f612c6974a262eb04a
 
+WORKDIR /ComfyUI/custom_nodes/ComfyUI-Easy-Use
+# remove onnxruntime
+RUN sed -i '/^onnxruntime/d' requirements.txt
+
 WORKDIR /ComfyUI/custom_nodes/IAMCCS-nodes
 # Use version without errors
 RUN git fetch --unshallow && git checkout d11592ca6b7550877ca048e8a7d6eb37e331ade2
