@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:11052026
+FROM ls250824/comfyui-runtime:21052026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -74,6 +74,8 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/ethanfel/ComfyUI-LoRA-Optimizer.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/WASasquatch/was_affine.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-PromptRelay.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/judian17/ComfyUI_YOLO_For_Multi_SDPose_Detection.git  && \
+    git clone --depth=1 --filter=blob:none https://github.com/wuwukaka/ComfyUI-BodyRatioMapper.git && \
     git clone --depth=1 --filter=blob:none https://github.com/yolain/ComfyUI-Easy-Use.git
 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-RMBG
@@ -137,7 +139,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	-r ComfyUI-Lora-Manager/requirements.txt \
     -r ComfyUI-SAM3/requirements.txt \
     -r ComfyUI-QwenVL-Mod/requirements.txt \
-    -r ComfyUI-Easy-Use/requirements.txt
+    -r ComfyUI-Easy-Use/requirements.txt \
+	-r ComfyUI-PromptRelay/requirements.txt \
+	-r ComfyUI_YOLO_For_Multi_SDPose_Detection/requirements.txt
 
 WORKDIR /ComfyUI/custom_nodes
 # Own custom_nodes (local)
@@ -177,7 +181,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.21.0 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.22.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"
