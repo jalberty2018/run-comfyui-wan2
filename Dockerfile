@@ -107,8 +107,8 @@ WORKDIR /ComfyUI/custom_nodes/ComfyUI-Easy-Use
 RUN sed -i '/^onnxruntime/d' requirements.txt
 
 WORKDIR /ComfyUI/custom_nodes/IAMCCS-nodes
-# Use version without errors
-RUN git fetch --unshallow && git checkout d11592ca6b7550877ca048e8a7d6eb37e331ade2
+# 1.3.6
+RUN git fetch --unshallow && git checkout 4dd640ca6b8564976a8cb62be59a50d83677cdd6
 
 WORKDIR /
 # Install Dependencies global
