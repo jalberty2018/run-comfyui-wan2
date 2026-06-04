@@ -47,6 +47,7 @@ civitai_red <VERSION_ID> /workspace/ComfyUI/models/loras
 
 ```bash
 7z a -p -mhe=on /workspace/output/output-wan-x.7z /workspace/ComfyUI/output/
+7z a -p -mhe=on -v800m /workspace/output/output-image-x.7z /workspace/ComfyUI/output/
 ```
 
 ### **Extract Archive**  
