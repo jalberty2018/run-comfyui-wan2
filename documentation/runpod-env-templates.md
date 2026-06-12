@@ -31,7 +31,7 @@ WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampl
 WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
 ```
 
-#### Private with lighning
+#### Private with lightning
 
 ```bash
 CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"
@@ -89,7 +89,7 @@ HF_MODEL_TEXT_ENCODERS1=LS110824/text_encoders
 HF_MODEL_TEXT_ENCODERS_FILENAME1=wan21UMT5XxlFP32_fp32.safetensors
 HF_MODEL_LORA1=lightx2v/Wan2.2-Lightning
 HF_MODEL_LORA_FILENAME1=Wan2.2-T2V-A14B-4steps-lora-250928/low_noise_model.safetensors
-HF_MODEL_LORA2=LS110824/Wan21_lora 
+HF_MODEL_LORA2=LS110824/Wan21_lora
 HF_MODEL_LORA_FILENAME2=Wan14B_RealismBoost_T2V.safetensors
 HF_MODEL_LORA3=LS110824/Wan22_lora
 HF_MODEL_LORA_FILENAME3=Wan2.2-T2V-AgeSlider-14B_high_noise.safetensors
@@ -102,7 +102,7 @@ HF_MODEL_LORA_FILENAME6=Wan2.2-T2V-BodySizeSliderv2-LOW14B.safetensors
 WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-t2v-MoeSamplerAdv-Dyno-pod.json
 ```
 
-### i2v + SVI Pro (lighning,longvideo)
+### i2v + SVI Pro (lightning, long video)
 
 #### Public
 

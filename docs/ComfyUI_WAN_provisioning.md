@@ -20,7 +20,7 @@
 ## Others
 
 - [segmentation](provisioning/hf_segmentation.md)
-- [fetection](provisiong/hf_detection.md)
+- [detection](provisioning/hf_detection.md)
 - [upscale](provisioning/hf_upscale.md)
 - [vfi](provisioning/hf_frame_interpolation.md)
 - [vlm](provisioning/hf_vlm.md)

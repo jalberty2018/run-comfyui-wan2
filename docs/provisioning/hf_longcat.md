@@ -4,7 +4,7 @@
 - [Kijai](https://huggingface.co/Kijai/LongCat-Video_comfy)
 - [Longcat](https://huggingface.co/meituan-longcat/LongCat-Video)
 
-## Diffusion_models
+## Diffusion models
 
 ### Standard fp16
 

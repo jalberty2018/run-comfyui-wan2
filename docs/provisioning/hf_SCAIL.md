@@ -3,7 +3,7 @@
 - [Website](https://github.com/zai-org/SCAIL)
 - [Model](https://huggingface.co/Kijai/WanVideo_comfy/blob/main/SCAIL/Wan21-14B-SCAIL-preview_comfy_bf16.safetensors)
 
-## Diffusion_models
+## Diffusion models
 
 ### Standard fp16
 

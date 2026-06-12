@@ -1,32 +1,32 @@
-# Run WAN 2.x with ComfyUI with provisioning
+# Run WAN 2.x with ComfyUI and provisioning
 
 ## Features
 
 - Automatic model and LoRA provisioning via environment variables.
 - Supports advanced workflows for **video generation** and **enhancement** using pre-installed custom nodes.
 - Compatible with high-performance NVIDIA GPUs (CUDA 12.8).
-- Compiled attentions and GPU accelerations.
+- Compiled attention and GPU acceleration.
 
-## Built-in **authentication**
-  
+## Built-in Authentication
+
 - ComfyUI
 - Code Server
-- HuggingFace API
+- Hugging Face API
 - CivitAI API
 
-## Images on Docker 
+## Images on Docker
 
-- If the image is **less then one day old** it is possible that it is not tested or will be updated.
+- If the image is **less than one day old**, it might not be tested yet or might still be updated.
 
-## Template deployment Runpod
+## Template deployment RunPod
 
 ### Deployment/Usage information
 
 - Tested on a L40S / RTX A6000 Ada / A40.
 
-### Templates Runpod
+### Templates RunPod
 
-- Specific models/loras/workflows for the templates are downloaded when the pod starts.
+- Specific models, LoRAs, and workflows for the templates are downloaded when the pod starts.
 
 ### Templates
 
@@ -43,9 +43,9 @@
 - [Start](https://comfyui.rozenlaan.site/ComfyUI_WAN/)
 - [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
 
-##  Hardware Requirements
+## Hardware Requirements
 
-### T2V-A14B or I2V-A14B (high/low) 
+### T2V-A14B or I2V-A14B (high/low)
 
 #### **Recommended GPU**
 
@@ -54,7 +54,7 @@
 
 | GPU          | VRAM  | RAM ComfyUI-Native/ComfyUI-WanVideoWrapper |
 |--------------------------|-------|-------------------------|
-| L40S, RTX 6000 Ada        | 45Gb | 90Gb/50Gb           |
+| L40S, RTX 6000 Ada        | 45 GB | 90 GB/50 GB           |
 
 #### **Recommended GPU** for SVI v2 PRO
 
@@ -63,17 +63,17 @@
 
 | GPU          | VRAM  | RAM ComfyUI-Native/ComfyUI-WanVideoWrapper |
 |--------------------------|-------|-------------------------|
-| L40S         | 45Gb | minimum 95 Gb           |
+| L40S         | 45 GB | minimum 95 GB           |
 
-#### Possible GPU with limitations due to available ram on rupod
+#### Possible GPU with limitations due to available RAM on RunPod
 
 - precision fp16
 - video settings 1024x768 81 frames (ComfyUI-WanVideoWrapper Offload 10)
-- only possible with worflows based on ComfyUI-WanVideoWrapper
+- only possible with workflows based on ComfyUI-WanVideoWrapper
 
 | GPU       | VRAM  | RAM ComfyUI-WanVideoWrapper |
 |--------------------------|-------|--------------|
-| A40, RTX 6000 | 45Gb | 45Gb |
+| A40, RTX 6000 | 45 GB | 45 GB |
 
 ### Animate
 
@@ -82,7 +82,7 @@
 
 | Recommended GPU          | VRAM  | RAM   |
 |--------------------------|-------|-------|
-| L40S, RTX 6000 Ada       | 40Gb | 105Gb | 
+| L40S, RTX 6000 Ada       | 40 GB | 105 GB |
 
 ### SCAIL
 
@@ -91,7 +91,7 @@
 
 | Recommended GPU          | VRAM  | RAM   |
 |--------------------------|-------|-------|
-| L40S, RTX 6000 Ada    | 40Gb | 105Gb | 
+| L40S, RTX 6000 Ada    | 40 GB | 105 GB |
 
 
 ## Other available pods
