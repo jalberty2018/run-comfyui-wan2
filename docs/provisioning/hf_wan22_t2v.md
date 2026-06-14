@@ -128,14 +128,14 @@ hf download lightx2v/Wan2.2-Distill-Loras wan2.2_t2v_A14b_low_noise_lora_rank64_
 #### rank128
 
 ```bash
- hf download Kijai/WanVideo_comfy Lightx2v lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank128_bf16.safetensors \
+ hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank128_bf16.safetensors \
  --local-dir ComfyUI/models/loras
 ```
 
 #### rank256
 
 ```bash
- hf download Kijai/WanVideo_comfy Lightx2v lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank256_bf16.safetensors \
+ hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank256_bf16.safetensors \
  --local-dir ComfyUI/models/loras
 ```
 

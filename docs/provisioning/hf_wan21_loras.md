@@ -82,5 +82,5 @@ hf download LS110824/Wan21_lora HighSpeedDynamics.safetensors --local-dir /works
 ## FusionX FaceNaturalizer
 
 ```bash
-hf download LS110824/Wan21_lora Wan21_lora FusionX_FaceNaturalizer.safetensors --local-dir /workspace/ComfyUI/models/loras/
+hf download LS110824/Wan21_lora FusionX_FaceNaturalizer.safetensors --local-dir /workspace/ComfyUI/models/loras/
 ```
