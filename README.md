@@ -1,12 +1,12 @@
 [![Docker Image Version](https://img.shields.io/docker/v/ls250824/run-comfyui-wan2)](https://hub.docker.com/r/ls250824/run-comfyui-wan2)
 
-# 🚀 Run WAN 2.x with ComfyUI with provisioning — RunPod
+# 🚀 Run WAN 2.x with ComfyUI and provisioning — RunPod
 
 ![Pod running on L40S native comfyUI](images/runpod.jpg)
 
 ![Workflow i2v SVI 2.0 PRO](images/ai-generated.jpg)
 
-A streamlined and automated environment for running **ComfyUI** with **WAN 2.x video models**, optimized for use on RunPod
+A streamlined and automated environment for running **ComfyUI** with **WAN 2.x video models**, optimized for use on RunPod.
 
 ## 🔧 Features
 
@@ -21,11 +21,11 @@ A streamlined and automated environment for running **ComfyUI** with **WAN 2.x v
 
 ## 🧩 Template Deployment
 
-### Deployment.
+### Deployment
 
-- All available templates on runpod are tested on a L40S/A40.
+- All available templates on RunPod are tested on an L40S/A40.
 
-### Runpod templates
+### RunPod templates
 
 [**👉 One-click Deploy on RunPod WAN 2.2 t2v (lightx2v)**](https://console.runpod.io/deploy?template=qvozvvb1xd&ref=se4tkc5o)
 
@@ -33,7 +33,7 @@ A streamlined and automated environment for running **ComfyUI** with **WAN 2.x v
 
 [**👉 One-click Deploy on RunPod WAN 2.2 animate (lightx2v)**](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o)
 
-[**👉 One-click Deploy on Runpod WAN SCAIL VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
+[**👉 One-click Deploy on RunPod WAN SCAIL VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
 
 ### Documentation
 
@@ -51,13 +51,15 @@ A streamlined and automated environment for running **ComfyUI** with **WAN 2.x v
 
 ### Custom Image
 
-docker pull ls250824/run-comfyui-wan2:<[![Docker Image Version](https://img.shields.io/docker/v/ls250824/run-comfyui-wan2)](https://hub.docker.com/r/ls250824/run-comfyui-wan2)>
+```bash
+docker pull ls250824/run-comfyui-wan2:<tag>
+```
 
 ## 🛠️ Build & Push Docker Image (Optional)
 
-Use none docker setup to build the image using the included Python script.
+Use a local Docker setup to build the image using the included Python script.
 
-### Build Script: `build-docker.py`
+### Build Script: `build_docker.py`
 
 | Argument       | Description                        | Default          |
 |----------------|------------------------------------|------------------|
@@ -69,10 +71,10 @@ Use none docker setup to build the image using the included Python script.
 
 ```bash
 git clone https://github.com/jalberty2018/run-comfyui-wan2.git
-cp ./run-comfyui-wan2/build-docker.py ..
+cp ./run-comfyui-wan2/build_docker.py ..
 
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-python3 build-docker.py   --username=<your_dockerhub_username>   --tag=<custom_tag>   --latest   run-comfyui-wan2
+python3 build_docker.py --username=<your_dockerhub_username> --tag=<custom_tag> --latest run-comfyui-wan2
 ```

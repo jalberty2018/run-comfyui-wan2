@@ -2,6 +2,14 @@
 echo "▶️ Pod run-comfyui-wan2 started"
 echo "ℹ️ Wait until the message 🎉 Provisioning done, ready to create AI content 🎉 is displayed"
 
+# Hugging Face CLI output tuned for RunPod plain logs.
+export NO_COLOR=1
+export HF_HUB_VERBOSITY=warning
+export HF_HUB_DISABLE_PROGRESS_BARS=1
+export HF_HUB_DISABLE_TELEMETRY=1
+export DO_NOT_TRACK=1
+export HF_HUB_DISABLE_UPDATE_CHECK=1
+
 # Enable SSH if PUBLIC_KEY is set
 if [[ -n "$PUBLIC_KEY" ]]; then
     mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -237,6 +245,8 @@ download_generic_HF() {
     local model_var="$1"
     local file_var="$2"
     local dest_dir="$3"
+    local include_var="${4:-}"
+    local exclude_var="${5:-}"
 
     local model="${!model_var}"
     [[ -z "$model" ]] && return 0
@@ -250,14 +260,23 @@ download_generic_HF() {
     mkdir -p "$target"
 
     local status="ok"
+    local hf_args=()
+
+    if [[ -n "$include_var" && -n "${!include_var}" ]]; then
+        hf_args+=(--include "${!include_var}")
+    fi
+
+    if [[ -n "$exclude_var" && -n "${!exclude_var}" ]]; then
+        hf_args+=(--exclude "${!exclude_var}")
+    fi
 
     if [[ -n "$file" ]]; then
         echo "ℹ️ [DOWNLOAD] Fetching $model/$file → $target"
-        hf download "$model" "$file" --local-dir "$target"
+        hf download "$model" "$file" "${hf_args[@]}" --local-dir "$target"
         local rc=$?
     else
         echo "ℹ️ [DOWNLOAD] Fetching $model → $target"
-        hf download "$model" --local-dir "$target"
+        hf download "$model" "${hf_args[@]}" --local-dir "$target"
         local rc=$?
     fi
 
@@ -398,8 +417,6 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
       "AUDIO_ENCODERS:AUDIO_ENCODERS_FILENAME:audio_encoders"
       "DIFFUSION_MODELS:DIFFUSION_MODELS_FILENAME:diffusion_models"
       "CHECKPOINTS:CHECKPOINTS_FILENAME:checkpoints"
-      "VL:VL_FILENAME:VLM"
-      "SAMS:SAMS_FILENAME:sams"
       "LATENT_UPSCALE:LATENT_UPSCALE_FILENAME:latent_upscale_models"
       "VAE_APPROX:VAE_APPROX_FILENAME:vae_approx"
       "CONTROLNET:CONTROLNET_FILENAME:controlnet"
@@ -457,14 +474,18 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
         VAR1="HF_MODEL${i}"
         VAR2="HF_MODEL_FILENAME${i}"
         DIR_VAR="HF_MODEL_DIR${i}"
-        download_generic_HF "${VAR1}" "${VAR2}" "${!DIR_VAR}"
+        INCLUDE_VAR="HF_MODEL_INCLUDE${i}"
+        EXCLUDE_VAR="HF_MODEL_EXCLUDE${i}"
+        download_generic_HF "${VAR1}" "${VAR2}" "${!DIR_VAR}" "${INCLUDE_VAR}" "${EXCLUDE_VAR}"
     done
 	
     # Huggingface download full model to specified directory independent on VRAM
     for i in $(seq 1 20); do
         VAR1="HF_FULL_MODEL${i}"
-        DIR_VAR="HF_MODEL_DIR${i}"
-        download_generic_HF "${VAR1}" "" "${!DIR_VAR}"
+        DIR_VAR="HF_FULL_MODEL_DIR${i}"
+        INCLUDE_VAR="HF_FULL_MODEL_INCLUDE${i}"
+        EXCLUDE_VAR="HF_FULL_MODEL_EXCLUDE${i}"
+        download_generic_HF "${VAR1}" "" "${!DIR_VAR}" "${INCLUDE_VAR}" "${EXCLUDE_VAR}"
     done  
 	 
     echo "📥 Provisioning workflows"

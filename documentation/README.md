@@ -2,16 +2,12 @@
 
 ## Pre-Installed Custom Nodes
 
-- Open ComfyUI manager installed custom nodes.
-- [custom_nodes](docs/ComfyUI_WAN_custom_nodes.md)
+- Open ComfyUI Manager to review installed custom nodes.
 
 ## Documentation
 
-- [Model provisioning](docs/ComfyUI_WAN_provisioning.md)
-- [Resources](docs/ComfyUI_WAN_resources.md)
-- [Image setup](docs/ComfyUI_WAN_image_setup.md)
-- [Environment variables](docs/ComfyUI_WAN_configuration.md)
-- [Hardware Requirements](docs/ComfyUI_WAN_hardware.md)
+- [Model provisioning](../docs/ComfyUI_WAN_provisioning.md)
+- [RunPod environment templates](runpod-env-templates.md)
 - [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
 - [Update](https://comfyui.rozenlaan.site/ComfyUI_WAN_update/)
 
@@ -19,7 +15,7 @@
 
 - Open from ComfyUI's interface on the left
 
-#### **Huggingface**  
+#### **Hugging Face**
 
 ```bash
 export HF_TOKEN="xxxxx"
@@ -31,7 +27,7 @@ hf upload model /workspace/model.safetensors
 hf auth login --token xxxxx
 ```
 
-#### **CivitAI**  
+#### **CivitAI**
 
 ```bash
 export CIVITAI_TOKEN="xxxxx"
@@ -41,40 +37,40 @@ civitai_red <VERSION_ID> /workspace/ComfyUI/models/diffusion_models
 civitai_red <VERSION_ID> /workspace/ComfyUI/models/loras
 ```
 
-## 7z Compression  
+## 7z Compression
 
-### **Encrypt & Archive Output**  
+### **Encrypt & Archive Output**
 
 ```bash
 7z a -p -mhe=on /workspace/output/output-wan-x.7z /workspace/ComfyUI/output/
 7z a -p -mhe=on -v800m /workspace/output/output-image-x.7z /workspace/ComfyUI/output/
 ```
 
-### **Extract Archive**  
+### **Extract Archive**
 
 ```bash
 7z x x.7z
 ```
 
-## Clean up  
+## Clean up
 
 ```bash
 rm -rf /workspace/output/ /workspace/input/ /workspace/ComfyUI/output/ /workspace/ComfyUI/models/loras/
 ncdu
 ```
 
-## Utilities  
+## Utilities
 
 ```bash
 nvtop      # GPU Monitoring
 nvidia-smi # GPU information
-htop       # Process Monitoring  
-mc         # Midnight Commander (file manager)  
+htop       # Process Monitoring
+mc         # Midnight Commander (file manager)
 nano       # Text Editor
 ncdu       # Clean Up
 unzip      # uncompress
 7z         # Archiving
-runpodctl  # runpod pod management
+runpodctl  # RunPod pod management
 ```
 
 ## Test/debug
@@ -84,7 +80,7 @@ python /workspace/test/test_pytorch_cuda.py
 python /workspace/test/test_flash.py
 python /workspace/test/test_sage.py
 python /workspace/test/test_torch_generic_nms.py
-python /workspace/test/test_llmama_cpp.py
-python /workspace/test/test/environment.py
+python /workspace/test/test_llama_cpp.py
+python /workspace/test/test_environment.py
 python /workspace/test/test_environment_runpod.py
 ```

@@ -1,12 +1,12 @@
 # Manual provisioning WAN 2.2 animate
 
-- [ComfyUI Huggingface](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/tree/main/split_files)
-- [Wan-AI Huggingface](https://huggingface.co/Wan-AI)
+- [ComfyUI Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/tree/main/split_files)
+- [Wan-AI Hugging Face](https://huggingface.co/Wan-AI)
 - [GGUF](https://huggingface.co/QuantStack)
 - [Kijai](https://huggingface.co/Kijai/WanVideo_comfy)
 - [lightx2v](https://huggingface.co/lightx2v)
 
-## Diffusion_models
+## Diffusion models
 
 ### bf16
 
@@ -61,7 +61,7 @@ hf download Kijai/WanVideo_comfy Wan2_1_VAE_fp32.safetensors \
 --local-dir /workspace/ComfyUI/models/vae/
 ```
 
-## Loras Lighning lightx2v & relight
+## Loras Lightning lightx2v & relight
 
 ```bash
 hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors \

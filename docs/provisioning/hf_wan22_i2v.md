@@ -45,7 +45,7 @@ hf download lightx2v/Wan2.2-Distill-Models wan2.2_i2v_A14b_low_noise_scaled_fp8_
 --local-dir=/workspace/ComfyUI/models/diffusion_models/
 ```
 
-#### 1O3O
+#### 1030
 
 ```bash
 hf download lightx2v/Wan2.2-Distill-Models wan2.2_i2v_A14b_high_noise_lightx2v_4step_1030.safetensors \
@@ -91,12 +91,12 @@ hf download Kijai/WanVideo_comfy Wan2_1_VAE_fp32.safetensors \
 ```bash
 hf download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/clip_vision/clip_vision_h.safetensors \
 --local-dir=/workspace/ComfyUI/models/clip_vision
-``` 
+```bash
 
 ### NSFW
 
 ```bash
-hf download ricecake/wan21NSFWClipVisionH_v10 wan21NSFWClipVisionH_v10.safetensors \ 
+hf download ricecake/wan21NSFWClipVisionH_v10 wan21NSFWClipVisionH_v10.safetensors \
 --local-dir=/workspace/ComfyUI/models/clip_vision
 ```
 
@@ -120,7 +120,7 @@ hf download Kijai/WanVideo_comfy LoRAs/Stable-Video-Infinity/v2.0/SVI_v2_PRO_Wan
 hf download lightx2v/Wan2.2-Lightning Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/high_noise_model.safetensors \
 --local-dir=/workspace/ComfyUI/models/loras/
 
-hf download lightx2v/Wan2.2-Lightning Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/low_noise_model.safetensors  \
+hf download lightx2v/Wan2.2-Lightning Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/low_noise_model.safetensors \
 --local-dir=/workspace/ComfyUI/models/loras/
 ```
 
@@ -162,16 +162,16 @@ hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_ligh
 
 ```bash
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_256_fp16.safetensors \
-—local-dir=/workspace/ComfyUI/models/loras/
+--local-dir=/workspace/ComfyUI/models/loras/
 
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_256_fp16.safetensors \
-—local-dir=/workspace/ComfyUI/models/loras/
+--local-dir=/workspace/ComfyUI/models/loras/
 ```
 
 ```bash
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_64_fp16.safetensors \
-—local-dir=/workspace/ComfyUI/models/loras/
+--local-dir=/workspace/ComfyUI/models/loras/
 
 hf download Kijai/WanVideo_comfy LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_64_fp16.safetensors \
-—local-dir=/workspace/ComfyUI/models/loras/
+--local-dir=/workspace/ComfyUI/models/loras/
 ```

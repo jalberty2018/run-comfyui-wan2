@@ -1,22 +1,22 @@
 # Manual provisioning WAN 2.1
 
-- [ComfyUI Huggingface](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_Repackaged/tree/main/split_files)
-- [Wan-AI Huggingface](https://huggingface.co/Wan-AI)  
+- [ComfyUI Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_Repackaged/tree/main/split_files)
+- [Wan-AI Hugging Face](https://huggingface.co/Wan-AI)
 - [WAN-VACE Github](https://github.com/ali-vilab/VACE)
-- [FusionX Huggingface](https://huggingface.co/vrgamedevgirl84/Wan14BT2VFusioniX)
-- [MoviiGen Huggingface](https://huggingface.co/ZuluVision/MoviiGen1.1)
+- [FusionX Hugging Face](https://huggingface.co/vrgamedevgirl84/Wan14BT2VFusioniX)
+- [MoviiGen Hugging Face](https://huggingface.co/ZuluVision/MoviiGen1.1)
 - [Fun](https://huggingface.co/collections/alibaba-pai/wan21-fun-v11-680f514c89fe7b4df9d44f17)
 - [alibaba-pai](https://huggingface.co/collections/alibaba-pai/wan21-fun-67e4fb3b76ca01241eb7e334)
 - [Kijai](https://huggingface.co/Kijai/WanVideo_comfy)
 
-## Diffusion_models
+## Diffusion models
 
 ### t2v fp16
 
 ```bash
 hf download  Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/diffusion_models/wan2.1_t2v_14B_fp16.safetensors \
 --local-dir /workspace/ComfyUI/models/diffusion_models/
-``` 
+```
 
 ### i2v fp16
 

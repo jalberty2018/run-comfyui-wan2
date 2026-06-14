@@ -8,7 +8,7 @@
 - [lightx2v distill loras](https://huggingface.co/lightx2v/Wan2.2-Distill-Loras/tree/main)
 - [Fun Reward](https://huggingface.co/alibaba-pai/Wan2.2-Fun-Reward-LoRAs)
 
-## Diffusion_models
+## Diffusion models
 
 ### Standard fp16
 
@@ -18,11 +18,11 @@ hf download  Comfy-Org/Wan_2.2_ComfyUI_Repackaged split_files/diffusion_models/w
 
 hf download  Comfy-Org/Wan_2.2_ComfyUI_Repackaged split_files/diffusion_models/wan2.2_t2v_high_noise_14B_fp16.safetensors \
 --local-dir /workspace/ComfyUI/models/diffusion_models/
-``` 
+```
 
-### Lighting Dyno High
+### Lightning Dyno High
 
-```bash 
+```bash
 hf download lightx2v/Wan2.2-Lightning Wan2.2-T2V-A14B-4steps-250928-dyno/Wan2.2-T2V-A14B-4steps-250928-dyno-high-lightx2v.safetensors \
 --local-dir /workspace/ComfyUI/models/diffusion_models/
 ```
@@ -128,14 +128,14 @@ hf download lightx2v/Wan2.2-Distill-Loras wan2.2_t2v_A14b_low_noise_lora_rank64_
 #### rank128
 
 ```bash
- hf download Kijai/WanVideo_comfy Lightx2v lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank128_bf16.safetensors \
+ hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank128_bf16.safetensors \
  --local-dir ComfyUI/models/loras
 ```
 
 #### rank256
 
 ```bash
- hf download Kijai/WanVideo_comfy Lightx2v lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank256_bf16.safetensors \
+ hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank256_bf16.safetensors \
  --local-dir ComfyUI/models/loras
 ```
 

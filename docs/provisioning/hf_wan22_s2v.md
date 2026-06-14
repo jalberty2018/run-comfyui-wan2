@@ -1,7 +1,7 @@
 # Manual provisioning WAN 2.2 s2v
 
-- [ComfyUI Huggingface](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/tree/main/split_files)
-- [Wan-AI Huggingface](https://huggingface.co/Wan-AI)
+- [ComfyUI Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/tree/main/split_files)
+- [Wan-AI Hugging Face](https://huggingface.co/Wan-AI)
 - [GGUF](https://huggingface.co/QuantStack)
 - [Kijai](https://huggingface.co/Kijai/WanVideo_comfy)
 

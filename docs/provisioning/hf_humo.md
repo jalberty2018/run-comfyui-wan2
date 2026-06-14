@@ -20,7 +20,7 @@ hf download Comfy-Org/HuMo_ComfyUI split_files/diffusion_models/humo_17B_fp8_e4m
   --local-dir ComfyUI/models/diffusion_models
 ```
 
-# CLIP audio encoder
+## CLIP audio encoder
 
 ```bash
 hf download Comfy-Org/HuMo_ComfyUI split_files/audio_encoders/whisper_large_v3_fp16.safetensors \
