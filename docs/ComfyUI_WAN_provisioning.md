@@ -15,12 +15,13 @@
 - [wan](provisioning/hf_wan21.md)
 - [huMo](provisioning/hf_humo.md)
 - [scail](provisioning/hf_SCAIL.md)
+- [scail 2](provisioning/hf_SCAIL-2.md)
 - [loras](provisioning/hf_wan21_loras.md)
 
 ## Others
 
 - [segmentation](provisioning/hf_segmentation.md)
-- [fetection](provisiong/hf_detection.md)
+- [detection](provisiong/hf_detection.md)
 - [upscale](provisioning/hf_upscale.md)
 - [vfi](provisioning/hf_frame_interpolation.md)
 - [vlm](provisioning/hf_vlm.md)

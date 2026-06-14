@@ -1,21 +1,21 @@
-# SCAIL WAN2.1
+# SCAIL 2 WAN2.1
 
-- [Website](https://github.com/zai-org/SCAIL)
-- [Model](https://huggingface.co/Kijai/WanVideo_comfy/blob/main/SCAIL/Wan21-14B-SCAIL-preview_comfy_bf16.safetensors)
+- [Website](https://github.com/zai-org/SCAIL-2)
+- [Huggingface](https://huggingface.co/Comfy-Org/SCAIL-2)
 
 ## Diffusion_models
 
 ### Standard fp16
 
 ```bash
-hf download Kijai/WanVideo_comfy SCAIL/Wan21-14B-SCAIL-preview_comfy_bf16.safetensors \
+hf download Comfy-Org/SCAIL-2 diffusion_models/wan2.1_14B_SCAIL_2_fp16.safetensors \
 --local-dir=/workspace/ComfyUI/models/diffusion_models
 ```
 
 ### Scaled fp8
 
 ```bash
-hf download Kijai/WanVideo_comfy_fp8_scaled SCAIL/Wan21-14B-SCAIL-preview_fp8_e4m3fn_scaled_KJ.safetensors \
+hf download Comfy-Org/SCAIL-2 diffusion_models/wan2.1_14B_SCAIL_2_fp8_scaled.safetensors  \
 --local-dir=/workspace/ComfyUI/models/diffusion_models
 ```
 
@@ -73,3 +73,11 @@ hf download Kijai/WanVideo_comfy Wan2_1_VAE_fp32.safetensors \
 hf download Kijai/WanVideo_comfy Lightx2v/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors \
 --local-dir=/workspace/ComfyUI/models/loras
 ```
+
+## DPO-Lora
+
+```bash
+hf download Comfy-Org/SCAIL-2 loras/wan2.1_SCAIL_2_DPO_lora_bf16.safetensors \
+--local-dir=/workspace/ComfyUI/models/loras
+```
+
