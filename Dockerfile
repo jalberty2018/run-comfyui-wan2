@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # run-comfyui-wan2
-FROM ls250824/comfyui-runtime:04062026
+FROM ls250824/comfyui-runtime:16062026
 
 # Set Working Directory
 WORKDIR /ComfyUI
@@ -22,6 +22,11 @@ WORKDIR /ComfyUI/custom_nodes
 
 RUN --mount=type=cache,target=/root/.cache/git \
     git clone --depth=1 --filter=blob:none https://github.com/rgthree/rgthree-comfy.git && \
+    git clone --depth=1 --filter=blob:none https://github.com/Azornes/Comfyui-Resolution-Master.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/DecartAI/Lucy-Edit-ComfyUI.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/GizmoR13/PG-Nodes.git && \
+	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
+    git clone --depth=1 --filter=blob:none https://github.com/yolain/ComfyUI-Easy-Use.git && \
     git clone --depth=1 --filter=blob:none https://github.com/liusida/ComfyUI-Login.git && \
     git clone --depth=1 --filter=blob:none https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/1038lab/ComfyUI-JoyCaption.git && \
@@ -34,15 +39,12 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/evanspearman/ComfyMath.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/city96/ComfyUI-GGUF.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/stduhpf/ComfyUI-WanMoeKSampler.git && \
-    git clone --depth=1 --filter=blob:none https://github.com/Azornes/Comfyui-Resolution-Master.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/ssitu/ComfyUI_UltimateSDUpscale --recursive && \
     git clone --depth=1 --filter=blob:none https://github.com/VraethrDalkr/ComfyUI-TripleKSampler.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-segment-anything-2.git && \
     git clone --depth=1 --filter=blob:none https://github.com/1038lab/ComfyUI-RMBG.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/Fannovel16/comfyui_controlnet_aux.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/liusida/ComfyUI-AutoCropFaces.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/DecartAI/Lucy-Edit-ComfyUI.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/GizmoR13/PG-Nodes.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/vrgamegirl19/comfyui-vrgamedevgirl.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced && \
 	git clone --depth=1 --filter=blob:none https://github.com/x3bits/ComfyUI-Power-Flow.git && \
@@ -67,7 +69,6 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/SeanScripts/ComfyUI-Unload-Model.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/Windecay/ComfyUI_Dynamic-RAMCache.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterMultiF2V.git && \
-	git clone --depth=1 --filter=blob:none https://github.com/willmiao/ComfyUI-Lora-Manager.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/princepainter/ComfyUI-PainterVideoUpscale.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/gregtee2/ComfyUI_VideoChunkTools.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/huchukato/ComfyUI-QwenVL-Mod.git && \
@@ -76,7 +77,6 @@ RUN --mount=type=cache,target=/root/.cache/git \
 	git clone --depth=1 --filter=blob:none https://github.com/kijai/ComfyUI-PromptRelay.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/judian17/ComfyUI_YOLO_For_Multi_SDPose_Detection.git  && \
     git clone --depth=1 --filter=blob:none https://github.com/wuwukaka/ComfyUI-BodyRatioMapper.git && \
-    git clone --depth=1 --filter=blob:none https://github.com/yolain/ComfyUI-Easy-Use.git && \
 	git clone --depth=1 --filter=blob:none https://github.com/jieg9341-lab/ComfyUI-SCAIL2-Easy.git
 
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-RMBG
@@ -182,7 +182,7 @@ WORKDIR /workspace
 EXPOSE 8188 9000
 
 # Labels
-LABEL org.opencontainers.image.title="ComfyUI 0.24.0 for WAN 2.x inference" \
+LABEL org.opencontainers.image.title="ComfyUI 0.25.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
       org.opencontainers.image.licenses="MIT"
