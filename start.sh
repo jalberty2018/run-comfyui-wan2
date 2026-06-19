@@ -5,10 +5,9 @@ echo "ℹ️ Wait until the message 🎉 Provisioning done, ready to create AI c
 # Hugging Face CLI output tuned for RunPod plain logs.
 export NO_COLOR=1
 export HF_HUB_VERBOSITY=warning
-export HF_HUB_DISABLE_PROGRESS_BARS=1
-export HF_HUB_DISABLE_TELEMETRY=1
-export DO_NOT_TRACK=1
+export HF_HUB_DISABLE_PROGRESS_BARS=0
 export HF_HUB_DISABLE_UPDATE_CHECK=1
+export HF_DOWNLOAD_TIMEOUT="${HF_DOWNLOAD_TIMEOUT:-10m}"
 
 # Enable SSH if PUBLIC_KEY is set
 if [[ -n "$PUBLIC_KEY" ]]; then
@@ -200,7 +199,81 @@ else
     echo "❌ ERROR: PyTorch CUDA driver mismatch or unavailable, ComfyUI not started"
 fi
 
+show_runpod_services() {
+    if [[ "$HAS_GPU_RUNPOD" -ne 1 ]]; then
+        return 0
+    fi
+
+    echo "ℹ️ Connect to the following services from console menu or url"
+
+    if [[ -z "${RUNPOD_POD_ID:-}" ]]; then
+        echo "⚠️ RUNPOD_POD_ID not set — service URLs unavailable"
+        return 0
+    fi
+
+    local service
+    local port
+    local url
+    local local_url
+    local http_code
+    local -A services=(
+      ["Code-Server"]=9000
+      ["ComfyUI"]=8188
+    )
+
+    # Local health checks (inside the pod)
+    for service in "${!services[@]}"; do
+        port="${services[$service]}"
+        url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/login"
+        local_url="http://127.0.0.1:${port}/"
+
+        echo "👉 🔗 Service ${service} : ${url}"
+
+        # Check service locally (no proxy dependency)
+        http_code="$(curl -sS -o /dev/null -m 2 --connect-timeout 1 -w "%{http_code}" "$local_url" || true)"
+
+        # Treat common “service is up but protected/redirect” codes as UP
+        if [[ "$http_code" =~ ^(200|301|302|401|403|404)$ ]]; then
+            echo "✅ ${service} is running (local ${local_url}, HTTP ${http_code})"
+        else
+            echo "❌ ${service} not responding yet (local ${local_url}, HTTP ${http_code})"
+        fi
+    done
+
+    echo "👉 🔗 Lora-Manager: https://${RUNPOD_POD_ID}-8188.proxy.runpod.net/loras"
+}
+
+show_code_server_login() {
+    if [[ -n "$PASSWORD" ]]; then
+        echo "ℹ️ Code-Server login use PASSWORD set as env"
+    else
+        echo "⚠️ Code-Server login use the logged password"
+        cat /root/.config/code-server/config.yaml
+    fi
+}
+
 # Provisioning routines
+
+run_hf_download() {
+    local timeout_value="${HF_DOWNLOAD_TIMEOUT:-10m}"
+    local hf_command
+
+    echo "ℹ️ [DOWNLOAD] Timeout: $timeout_value"
+
+    # hf suppresses progress when stdout is a pipe. Run it in a pseudo-terminal
+    # and then convert its terminal progress into compact RunPod log lines.
+    printf -v hf_command '%q ' hf download "$@"
+
+    timeout --foreground --signal=TERM --kill-after=30s "$timeout_value" \
+        script --quiet --return --flush --command "$hf_command" /dev/null 2>&1 \
+        | stdbuf -oL tr '\r' '\n' \
+        | sed -u -E \
+            -e '/^[[:space:]]*$/d' \
+            -e $'s/\033\\[[0-9;?]*[ -\\/]*[@-~]//g' \
+            -e 's/^([^:]+):[[:space:]]*([0-9]+)%\|[^|]*\|[[:space:]]*([^[:space:]]+).*/Downloading \1 \2% \3/'
+
+    return "${PIPESTATUS[0]}"
+}
 
 download_model_HF() {
     local model_var="$1"
@@ -218,7 +291,7 @@ download_model_HF() {
 
     echo "ℹ️ [DOWNLOAD] Fetching $model + $file → $target"
 
-    hf download "$model" "$file" --local-dir "$target" 
+    run_hf_download "$model" "$file" --local-dir "$target"
     local rc=$?
 
     # ----------- SUCCESS ----------
@@ -231,6 +304,13 @@ download_model_HF() {
     # ---- SEGFAULT AFTER SUCCESS ---
     if [[ $rc -eq 139 && -f "$target/$file" ]]; then
         echo "⚠️ HF segfault after download (file exists → OK)"
+        sleep 1
+        return 0
+    fi
+
+    # ------------ TIMEOUT ----------
+    if [[ $rc -eq 124 ]]; then
+        echo "⚠️ HF download timed out after ${HF_DOWNLOAD_TIMEOUT}"
         sleep 1
         return 0
     fi
@@ -272,11 +352,11 @@ download_generic_HF() {
 
     if [[ -n "$file" ]]; then
         echo "ℹ️ [DOWNLOAD] Fetching $model/$file → $target"
-        hf download "$model" "$file" "${hf_args[@]}" --local-dir "$target"
+        run_hf_download "$model" "$file" "${hf_args[@]}" --local-dir "$target"
         local rc=$?
     else
         echo "ℹ️ [DOWNLOAD] Fetching $model → $target"
-        hf download "$model" "${hf_args[@]}" --local-dir "$target"
+        run_hf_download "$model" "${hf_args[@]}" --local-dir "$target"
         local rc=$?
     fi
 
@@ -290,6 +370,13 @@ download_generic_HF() {
     # ---- SEGFAULT AFTER SUCCESS ---
     if [[ $rc -eq 139 && -f "$target/$file" ]]; then
         echo "⚠️ HF segfault after download (file exists → OK)"
+        sleep 1
+        return 0
+    fi
+
+    # ------------ TIMEOUT ----------
+    if [[ $rc -eq 124 ]]; then
+        echo "⚠️ HF download timed out after ${HF_DOWNLOAD_TIMEOUT}"
         sleep 1
         return 0
     fi
@@ -402,7 +489,9 @@ download_media() {
 
 # Provisioning if comfyUI is responding running on GPU with CUDA
 if [[ "$HAS_COMFYUI" -eq 1 ]]; then  
-    
+    show_runpod_services
+    show_code_server_login
+
     # provisioning Models and loras
     echo "📥 Provisioning models HF"
 	
@@ -595,47 +684,10 @@ echo "ℹ️ Connections and/or diagnostic information"
 
 if [[ "$HAS_PROVISIONING" -eq 1 ]]; then 
     echo "🎉 Provisioning done, ready to create AI content 🎉"
-		
-	if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
-	  echo "ℹ️ Connect to the following services from console menu or url"
-	
-	  if [[ -z "${RUNPOD_POD_ID:-}" ]]; then
-	    echo "⚠️ RUNPOD_POD_ID not set — service URLs unavailable"
-	  else
-	    declare -A SERVICES=(
-	      ["Code-Server"]=9000
-	      ["ComfyUI"]=8188
-	    )
-	
-	    # Local health checks (inside the pod)
-	    for service in "${!SERVICES[@]}"; do
-	      port="${SERVICES[$service]}"
-	      url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/login"
-	      local_url="http://127.0.0.1:${port}/"
-	
-	      echo "👉 🔗 Service ${service} : ${url}"
-	
-	      # Check service locally (no proxy dependency)
-	      http_code="$(curl -sS -o /dev/null -m 2 --connect-timeout 1 -w "%{http_code}" "$local_url" || true)"
-	
-	      # Treat common “service is up but protected/redirect” codes as UP
-	      if [[ "$http_code" =~ ^(200|301|302|401|403|404)$ ]]; then
-	        echo "✅ ${service} is running (local ${local_url}, HTTP ${http_code})"
-	      else
-	        echo "❌ ${service} not responding yet (local ${local_url}, HTTP ${http_code})"
-	      fi
-	    done
 
-        echo "👉 🔗 Lora-Manager: https://${RUNPOD_POD_ID}-8188.proxy.runpod.net/loras"
-	  fi
-	fi
-	
-    if [[ -n "$PASSWORD" ]]; then
-		echo "ℹ️ Code-Server login use PASSWORD set as env"
-	else 
-        echo "⚠️ Code-Server login use the logged password"
-		cat /root/.config/code-server/config.yaml        
-    fi	
+    show_runpod_services
+    show_code_server_login
+
 else
     if [[ "$HAS_GPU_RUNPOD" -eq 0 ]]; then
         echo "⚠️ Pod started without a runpod GPU"
