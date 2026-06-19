@@ -36,7 +36,7 @@
 
 [**👉 One-click Deploy WAN 2.2 animate (lightx2v)**](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o)
 
-[**👉 One-click Deploy SCAIL-2 VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
+[**👉 One-click Deploy WAN SCAIL-2 VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
 
 ### Documentation
 
@@ -84,14 +84,23 @@
 |--------------------------|-------|-------|
 | L40S, RTX 6000 Ada       | 40 GB | 105 GB |
 
-### SCAIL
+### SCAIL/SCAIL-2
 
-- precision fp16
-- Depends on length and size of video.
+- Precision: fp16.
+- Depends on the length and size of the video.
 
-| Recommended GPU          | VRAM  | RAM   |
-|--------------------------|-------|-------|
-| L40S, RTX 6000 Ada    | 40 GB | 105 GB |
+| Recommended GPU        | Min VRAM  | Min RAM    |
+|------------------------|-------|--------|
+| L40S, RTX 6000 (Ada)   | 48 GB | 96 GB |
+
+### SCAIL-2
+
+- Precision: fp8
+- Depends on the length and size of the video.
+
+| GPU          | Min VRAM  | Min RAM |
+|--------------------------|-------|-------------------------|
+| RTX A5000 / RTX 4090 | 24 GB | 60 GB           |
 
 
 ## Other available pods
