@@ -343,7 +343,7 @@ WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-vi2v-wanwrapper-pod.json
 
 ### SCAIL-2
 
-#### Private
+#### Public
 
 ```bash
 HF_MODEL_LVRAM_DIFFUSION_MODELS1=Comfy-Org/SCAIL-2
@@ -364,6 +364,34 @@ HF_MODEL_LORA2=Comfy-Org/SCAIL-2
 HF_MODEL_LORA_FILENAME2=loras/wan2.1_SCAIL_2_DPO_lora_bf16.safetensors
 HF_MODEL_CHECKPOINTS1=Comfy-Org/sam3.1
 HF_MODEL_CHECKPOINTS_FILENAME1=checkpoints/sam3.1_multiplex_fp16.safetensors
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod
+```
+
+#### Private
+
+```bash
+CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"
+HF_TOKEN="{{ RUNPOD_SECRET_HF_TOKEN_WRITE }}"
+PASSWORD="{{ RUNPOD_SECRET_CODE-SERVER-NEW }}"
+HF_MODEL_LVRAM_DIFFUSION_MODELS1=Comfy-Org/SCAIL-2
+HF_MODEL_LVRAM_DIFFUSION_MODELS_FILENAME1=diffusion_models/wan2.1_14B_SCAIL_2_fp8_scaled.safetensors
+HF_MODEL_HVRAM_DIFFUSION_MODELS1=Comfy-Org/SCAIL-2
+HF_MODEL_HVRAM_DIFFUSION_MODELS_FILENAME1=diffusion_models/wan2.1_14B_SCAIL_2_fp16.safetensors
+HF_MODEL_LVRAM_TEXT_ENCODERS1=Comfy-Org/Wan_2.1_ComfyUI_repackaged
+HF_MODEL_LVRAM_TEXT_ENCODERS_FILENAME1=split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors
+HF_MODEL_HVRAM_TEXT_ENCODERS1=Comfy-Org/Wan_2.1_ComfyUI_repackaged
+HF_MODEL_HVRAM_TEXT_ENCODERS_FILENAME1=split_files/text_encoders/umt5_xxl_fp16.safetensors
+HF_MODEL_CLIP_VISION1=Comfy-Org/Wan_2.1_ComfyUI_repackaged
+HF_MODEL_CLIP_VISION_FILENAME1=split_files/clip_vision/clip_vision_h.safetensors
+HF_MODEL_VAE1=Kijai/WanVideo_comfy
+HF_MODEL_VAE_FILENAME1=Wan2_1_VAE_bf16.safetensors
+HF_MODEL_LORA1=Kijai/WanVideo_comfy
+HF_MODEL_LORA_FILENAME1=Lightx2v/lightx2v_I2V_14B_480p_cfg_step_distill_rank128_bf16.safetensors
+HF_MODEL_LORA2=Comfy-Org/SCAIL-2
+HF_MODEL_LORA_FILENAME2=loras/wan2.1_SCAIL_2_DPO_lora_bf16.safetensors
+HF_MODEL_CHECKPOINTS1=Comfy-Org/sam3.1
+HF_MODEL_CHECKPOINTS_FILENAME1=checkpoints/sam3.1_multiplex_fp16.safetensors
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod
 ```
 
 ### Phantom
