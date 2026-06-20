@@ -364,7 +364,7 @@ HF_MODEL_LORA2=Comfy-Org/SCAIL-2
 HF_MODEL_LORA_FILENAME2=loras/wan2.1_SCAIL_2_DPO_lora_bf16.safetensors
 HF_MODEL_CHECKPOINTS1=Comfy-Org/sam3.1
 HF_MODEL_CHECKPOINTS_FILENAME1=checkpoints/sam3.1_multiplex_fp16.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod.json
 ```
 
 #### Private
@@ -391,7 +391,7 @@ HF_MODEL_LORA2=Comfy-Org/SCAIL-2
 HF_MODEL_LORA_FILENAME2=loras/wan2.1_SCAIL_2_DPO_lora_bf16.safetensors
 HF_MODEL_CHECKPOINTS1=Comfy-Org/sam3.1
 HF_MODEL_CHECKPOINTS_FILENAME1=checkpoints/sam3.1_multiplex_fp16.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/SCAIL-2-vi2v-simple-pod.json
 ```
 
 ### Phantom
