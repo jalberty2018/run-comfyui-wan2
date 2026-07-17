@@ -1,4 +1,4 @@
-## Upscale_models copied to LS110824
+## Upscale_models
 
 ```bash
 hf download LS110824/upscale RealESRGAN_x2plus.pth \
