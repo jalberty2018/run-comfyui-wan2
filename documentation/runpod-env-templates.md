@@ -202,7 +202,7 @@ WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.js
 WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
 ```
 
-#### Private
+#### Private (to test)
 
 ```bash
 CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"
@@ -226,10 +226,13 @@ HF_MODEL_LORA4=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME4=FastWan/FastWan_T2V_14B_480p_lora_rank_128_bf16.safetensors
 HF_MODEL_LORA5=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME5=Pusa/Wan21_PusaV1_LoRA_14B_rank512_bf16.safetensors
+HF_MODEL1=VeryAladeen/Sec-4B
+HF_MODEL_FILENAME1=SeC-4B-fp16.safetensors
+HF_MODEL_DIR1=models/sams
 WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam2-pod.json
 WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.json
 WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
-``` 
+```
 
 ### s2v
 

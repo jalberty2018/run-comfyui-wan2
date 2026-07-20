@@ -255,24 +255,144 @@ show_code_server_login() {
 # Provisioning routines
 
 run_hf_download() {
-    local timeout_value="${HF_DOWNLOAD_TIMEOUT:-10m}"
+    local stall_timeout="${HF_DOWNLOAD_STALL_TIMEOUT:-300}"
+    local kill_after="${HF_DOWNLOAD_KILL_AFTER:-30}"
     local hf_command
+    local tmp_dir
+    local fifo
+    local pid
+    local watchdog_pid
+    local last_activity_file
+    local exit_code
+    local fallback=0
 
-    echo "ℹ️ [DOWNLOAD] Timeout: $timeout_value"
+    echo "ℹ️ [DOWNLOAD] Stall watchdog: ${stall_timeout}s"
+    echo "ℹ️ [DOWNLOAD] Kill grace period: ${kill_after}s"
 
-    # hf suppresses progress when stdout is a pipe. Run it in a pseudo-terminal
-    # and then convert its terminal progress into compact RunPod log lines.
+    # Safely quote all arguments passed to: hf download
     printf -v hf_command '%q ' hf download "$@"
 
-    timeout --foreground --signal=TERM --kill-after=30s "$timeout_value" \
-        script --quiet --return --flush --command "$hf_command" /dev/null 2>&1 \
-        | stdbuf -oL tr '\r' '\n' \
-        | sed -u -E \
-            -e '/^[[:space:]]*$/d' \
-            -e $'s/\033\\[[0-9;?]*[ -\\/]*[@-~]//g' \
-            -e 's/^([^:]+):[[:space:]]*([0-9]+)%\|[^|]*\|[[:space:]]*([^[:space:]]+).*/Downloading \1 \2% \3/'
+    tmp_dir="$(mktemp -d)"
+    fifo="${tmp_dir}/hf-output.fifo"
+    last_activity_file="${tmp_dir}/last_activity"
 
-    return "${PIPESTATUS[0]}"
+    mkfifo "$fifo"
+    date +%s > "$last_activity_file"
+
+    cleanup() {
+        [[ -n "${watchdog_pid:-}" ]] && kill "$watchdog_pid" 2>/dev/null || true
+        [[ -n "${pid:-}" ]] && kill "$pid" 2>/dev/null || true
+        rm -rf "$tmp_dir"
+    }
+
+    trap cleanup RETURN
+
+    run_download_attempt() {
+        local disable_xet="$1"
+        local backend_name="$2"
+
+        date +%s > "$last_activity_file"
+
+        echo "ℹ️ [DOWNLOAD] Starting with ${backend_name}..."
+
+        (
+            script --quiet --return --flush \
+                --command "HF_HUB_DISABLE_XET=${disable_xet} ${hf_command}" \
+                /dev/null
+        ) >"$fifo" 2>&1 &
+
+        pid=$!
+
+        #
+        # Watchdog:
+        # Check every 10 seconds whether output has been received recently.
+        #
+        (
+            while kill -0 "$pid" 2>/dev/null; do
+                sleep 10
+
+                local now
+                local last
+                local inactive
+
+                now="$(date +%s)"
+                last="$(cat "$last_activity_file" 2>/dev/null || echo "$now")"
+                inactive=$((now - last))
+
+                if (( inactive >= stall_timeout )); then
+                    echo
+                    echo "⚠️ [DOWNLOAD] No activity for ${inactive}s."
+                    echo "⚠️ [DOWNLOAD] ${backend_name} appears stalled."
+
+                    kill -TERM "$pid" 2>/dev/null || true
+
+                    sleep "$kill_after"
+
+                    if kill -0 "$pid" 2>/dev/null; then
+                        echo "⚠️ [DOWNLOAD] Process did not stop after ${kill_after}s; sending SIGKILL."
+                        kill -KILL "$pid" 2>/dev/null || true
+                    fi
+
+                    exit 124
+                fi
+            done
+        ) &
+
+        watchdog_pid=$!
+
+        #
+        # Read download output.
+        # Every received line resets the inactivity watchdog.
+        #
+        while IFS= read -r line; do
+            date +%s > "$last_activity_file"
+
+            printf '%s\n' "$line"
+        done < <(
+            stdbuf -oL tr '\r' '\n' <"$fifo" \
+                | sed -u -E \
+                    -e '/^[[:space:]]*$/d' \
+                    -e $'s/\033\\[[0-9;?]*[ -\\/]*[@-~]//g' \
+                    -e 's/^([^:]+):[[:space:]]*([0-9]+)%\|[^|]*\|[[:space:]]*([^[:space:]]+).*/Downloading \1 \2% \3/'
+        )
+
+        wait "$pid"
+        exit_code=$?
+
+        kill "$watchdog_pid" 2>/dev/null || true
+        wait "$watchdog_pid" 2>/dev/null || true
+
+        pid=""
+        watchdog_pid=""
+
+        return "$exit_code"
+    }
+
+    #
+    # Attempt 1: Xet
+    #
+    if run_download_attempt 0 "Xet"; then
+        echo "✅ [DOWNLOAD] Download completed successfully with Xet."
+        return 0
+    fi
+
+    exit_code=$?
+
+    echo "⚠️ [DOWNLOAD] Xet download stopped or failed with exit code ${exit_code}."
+    echo "ℹ️ [DOWNLOAD] Retrying with Xet disabled (plain HTTP)..."
+
+    #
+    # Attempt 2: plain HTTP
+    #
+    if run_download_attempt 1 "plain HTTP"; then
+        echo "✅ [DOWNLOAD] Download completed successfully using plain HTTP."
+        return 0
+    fi
+
+    exit_code=$?
+
+    echo "❌ [DOWNLOAD] Plain HTTP download failed with exit code ${exit_code}."
+    return "$exit_code"
 }
 
 download_model_HF() {
