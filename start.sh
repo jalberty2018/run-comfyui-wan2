@@ -263,6 +263,7 @@ run_hf_download() {
     local pid
     local watchdog_pid
     local last_activity_file
+    local activity_tmp_file
     local exit_code
     local fallback=0
 
@@ -275,9 +276,13 @@ run_hf_download() {
     tmp_dir="$(mktemp -d)"
     fifo="${tmp_dir}/hf-output.fifo"
     last_activity_file="${tmp_dir}/last_activity"
+    activity_tmp_file="${tmp_dir}/last_activity.tmp"
 
     mkfifo "$fifo"
-    date +%s > "$last_activity_file"
+    # Write to a separate file first so the watchdog can never observe a
+    # timestamp file that has been truncated but not written yet.
+    date +%s > "$activity_tmp_file"
+    mv -f "$activity_tmp_file" "$last_activity_file"
 
     cleanup() {
         [[ -n "${watchdog_pid:-}" ]] && kill "$watchdog_pid" 2>/dev/null || true
@@ -291,7 +296,8 @@ run_hf_download() {
         local disable_xet="$1"
         local backend_name="$2"
 
-        date +%s > "$last_activity_file"
+        date +%s > "$activity_tmp_file"
+        mv -f "$activity_tmp_file" "$last_activity_file"
 
         echo "ℹ️ [DOWNLOAD] Starting with ${backend_name}..."
 
@@ -316,7 +322,14 @@ run_hf_download() {
                 local inactive
 
                 now="$(date +%s)"
-                last="$(cat "$last_activity_file" 2>/dev/null || echo "$now")"
+                last="$(cat "$last_activity_file" 2>/dev/null || true)"
+
+                # Ignore a missing or malformed sample instead of interpreting
+                # it as epoch zero and reporting decades of inactivity.
+                if [[ ! "$last" =~ ^[0-9]+$ ]] || (( last > now )); then
+                    continue
+                fi
+
                 inactive=$((now - last))
 
                 if (( inactive >= stall_timeout )); then
@@ -345,7 +358,8 @@ run_hf_download() {
         # Every received line resets the inactivity watchdog.
         #
         while IFS= read -r line; do
-            date +%s > "$last_activity_file"
+            date +%s > "$activity_tmp_file"
+            mv -f "$activity_tmp_file" "$last_activity_file"
 
             printf '%s\n' "$line"
         done < <(
@@ -374,9 +388,9 @@ run_hf_download() {
     if run_download_attempt 0 "Xet"; then
         echo "✅ [DOWNLOAD] Download completed successfully with Xet."
         return 0
+    else
+        exit_code=$?
     fi
-
-    exit_code=$?
 
     echo "⚠️ [DOWNLOAD] Xet download stopped or failed with exit code ${exit_code}."
     echo "ℹ️ [DOWNLOAD] Retrying with Xet disabled (plain HTTP)..."
@@ -387,9 +401,9 @@ run_hf_download() {
     if run_download_attempt 1 "plain HTTP"; then
         echo "✅ [DOWNLOAD] Download completed successfully using plain HTTP."
         return 0
+    else
+        exit_code=$?
     fi
-
-    exit_code=$?
 
     echo "❌ [DOWNLOAD] Plain HTTP download failed with exit code ${exit_code}."
     return "$exit_code"
