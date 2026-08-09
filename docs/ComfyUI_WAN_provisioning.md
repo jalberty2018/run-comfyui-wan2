@@ -1,5 +1,9 @@
 # 📦 Manual setup guides
 
+## Wan Animate 2
+
+- [Wan Animate 2](provisioning/hf_wan_animate_2.md)
+
 ## 2.2
 
 - [t2v](provisioning/hf_wan22_t2v.md)

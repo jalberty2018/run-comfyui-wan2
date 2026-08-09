@@ -1,5 +1,38 @@
 # Environment variables for templates
 
+## Wan Animate 2
+
+These profiles use the non-distilled diffusion checkpoints. The LoRA is still
+included because it is one of the support files supplied with Wan Animate 2.
+
+### Combined HVRAM/LVRAM profile (L40S 48 GB / RTX 5090 32 GB)
+
+The provisioning script automatically selects the HVRAM variables for an L40S
+and the LVRAM variables for an RTX 5090.
+
+```bash
+HF_MODEL_HVRAM_DIFFUSION_MODELS1=Comfy-Org/Wan-Animate-2
+HF_MODEL_HVRAM_DIFFUSION_MODELS_FILENAME1=diffusion_models/wan_animate_2_bf16.safetensors
+HF_MODEL_HVRAM_CLIP_VISION1=Comfy-Org/Wan-Animate-2
+HF_MODEL_HVRAM_CLIP_VISION_FILENAME1=clip_vision/clip_vision_h.safetensors
+HF_MODEL_HVRAM_TEXT_ENCODERS1=Comfy-Org/Wan-Animate-2
+HF_MODEL_HVRAM_TEXT_ENCODERS_FILENAME1=text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors
+HF_MODEL_HVRAM_VAE1=Comfy-Org/Wan-Animate-2
+HF_MODEL_HVRAM_VAE_FILENAME1=vae/Wan2_1_VAE_bf16.safetensors
+HF_MODEL_HVRAM_LORA1=Comfy-Org/Wan-Animate-2
+HF_MODEL_HVRAM_LORA_FILENAME1=loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors
+HF_MODEL_LVRAM_DIFFUSION_MODELS1=Comfy-Org/Wan-Animate-2
+HF_MODEL_LVRAM_DIFFUSION_MODELS_FILENAME1=diffusion_models/wan_animate_2_int8_convrot.safetensors
+HF_MODEL_LVRAM_CLIP_VISION1=Comfy-Org/Wan-Animate-2
+HF_MODEL_LVRAM_CLIP_VISION_FILENAME1=clip_vision/clip_vision_h.safetensors
+HF_MODEL_LVRAM_TEXT_ENCODERS1=Comfy-Org/Wan-Animate-2
+HF_MODEL_LVRAM_TEXT_ENCODERS_FILENAME1=text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors
+HF_MODEL_LVRAM_VAE1=Comfy-Org/Wan-Animate-2
+HF_MODEL_LVRAM_VAE_FILENAME1=vae/Wan2_1_VAE_bf16.safetensors
+HF_MODEL_LVRAM_LORA1=Comfy-Org/Wan-Animate-2
+HF_MODEL_LVRAM_LORA_FILENAME1=loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors
+```
+
 ## WAN 2.2
 
 ### t2v
@@ -137,6 +170,7 @@ WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-p
 WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
 WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-longvideo-pod.json
 ```
+
 #### Private
 
 ```bash

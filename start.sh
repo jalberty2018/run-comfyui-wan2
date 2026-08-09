@@ -47,11 +47,24 @@ fi
 
 # GPU detection nvidia-smi
 HAS_GPU=0
+export HAS_GPU_BLACKWELL=0
 if command -v nvidia-smi >/dev/null 2>&1; then
   if nvidia-smi >/dev/null 2>&1; then
     HAS_GPU=1
     GPU_MODEL=$(nvidia-smi --query-gpu=name --format=csv,noheader | xargs | sed 's/,/, /g')
     echo "✅ [GPU DETECTED] Found via nvidia-smi → Model(s): ${GPU_MODEL}"
+
+    # Blackwell GPUs use CUDA compute capability 10.x or newer. Fall back to
+    # known Blackwell product names when the installed nvidia-smi does not
+    # expose the compute_cap query field.
+    GPU_COMPUTE_CAPS="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null || true)"
+    if awk -F. '$1 + 0 >= 10 { found=1 } END { exit !found }' <<< "$GPU_COMPUTE_CAPS" \
+       || grep -Eqi 'Blackwell|(^|[^[:alnum:]])(GB[0-9]{2,3}|B100|B200|B300|GeForce[[:space:]]+RTX[[:space:]]+50[0-9]{2})($|[^[:alnum:]])' <<< "$GPU_MODEL"; then
+      export HAS_GPU_BLACKWELL=1
+      echo "✅ [BLACKWELL GPU DETECTED] HAS_GPU_BLACKWELL=1"
+    else
+      echo "ℹ️ [NO BLACKWELL GPU] HAS_GPU_BLACKWELL=0"
+    fi
   else
     echo "⚠️ [NO GPU] nvidia-smi found but failed to run (driver or permission issue)"
   fi
@@ -262,21 +275,37 @@ run_hf_download() {
     local fifo
     local pid
     local watchdog_pid
+    local progress_pid
     local last_activity_file
     local activity_tmp_file
+    local progress_activity_tmp_file
     local exit_code
     local fallback=0
+    local download_dir=""
+    local -a download_args=("$@")
+    local arg_index
+
+    for ((arg_index = 0; arg_index < ${#download_args[@]}; arg_index++)); do
+        if [[ "${download_args[arg_index]}" == "--local-dir" ]] \
+           && (( arg_index + 1 < ${#download_args[@]} )); then
+            download_dir="${download_args[arg_index + 1]}"
+            break
+        fi
+    done
 
     echo "ℹ️ [DOWNLOAD] Stall watchdog: ${stall_timeout}s"
     echo "ℹ️ [DOWNLOAD] Kill grace period: ${kill_after}s"
 
     # Safely quote all arguments passed to: hf download
-    printf -v hf_command '%q ' hf download "$@"
+    # Force human output so progress bars remain enabled when the command is
+    # captured through the pseudo-terminal and FIFO below.
+    printf -v hf_command '%q ' hf download --format human "$@"
 
     tmp_dir="$(mktemp -d)"
     fifo="${tmp_dir}/hf-output.fifo"
     last_activity_file="${tmp_dir}/last_activity"
     activity_tmp_file="${tmp_dir}/last_activity.tmp"
+    progress_activity_tmp_file="${tmp_dir}/last_activity.progress.tmp"
 
     mkfifo "$fifo"
     # Write to a separate file first so the watchdog can never observe a
@@ -286,6 +315,7 @@ run_hf_download() {
 
     cleanup() {
         [[ -n "${watchdog_pid:-}" ]] && kill "$watchdog_pid" 2>/dev/null || true
+        [[ -n "${progress_pid:-}" ]] && kill "$progress_pid" 2>/dev/null || true
         [[ -n "${pid:-}" ]] && kill "$pid" 2>/dev/null || true
         rm -rf "$tmp_dir"
     }
@@ -308,6 +338,42 @@ run_hf_download() {
         ) >"$fifo" 2>&1 &
 
         pid=$!
+
+        # Xet does not always emit its own progress bar when its output is
+        # captured. Report growth of the local download directory instead.
+        # Only actual byte growth refreshes the stall watchdog.
+        if [[ -n "$download_dir" ]]; then
+            (
+                local baseline_bytes
+                local previous_bytes
+                local current_bytes
+                local downloaded_bytes
+                local downloaded_mib
+
+                baseline_bytes="$(du -s -B1 "$download_dir" 2>/dev/null | awk '{print $1}')"
+                baseline_bytes="${baseline_bytes:-0}"
+                previous_bytes="$baseline_bytes"
+
+                while kill -0 "$pid" 2>/dev/null; do
+                    sleep 10
+                    current_bytes="$(du -s -B1 "$download_dir" 2>/dev/null | awk '{print $1}')"
+                    current_bytes="${current_bytes:-0}"
+
+                    if (( current_bytes > previous_bytes )); then
+                        downloaded_bytes=$((current_bytes - baseline_bytes))
+                        downloaded_mib=$((downloaded_bytes / 1024 / 1024))
+                        echo "⬇️ [DOWNLOAD] Progress: ${downloaded_mib} MiB received"
+                        date +%s > "$progress_activity_tmp_file"
+                        mv -f "$progress_activity_tmp_file" "$last_activity_file"
+                    else
+                        echo "ℹ️ [DOWNLOAD] Waiting for transfer progress..."
+                    fi
+
+                    previous_bytes="$current_bytes"
+                done
+            ) &
+            progress_pid=$!
+        fi
 
         #
         # Watchdog:
@@ -375,9 +441,12 @@ run_hf_download() {
 
         kill "$watchdog_pid" 2>/dev/null || true
         wait "$watchdog_pid" 2>/dev/null || true
+        [[ -n "${progress_pid:-}" ]] && kill "$progress_pid" 2>/dev/null || true
+        [[ -n "${progress_pid:-}" ]] && wait "$progress_pid" 2>/dev/null || true
 
         pid=""
         watchdog_pid=""
+        progress_pid=""
 
         return "$exit_code"
     }
@@ -421,6 +490,14 @@ download_model_HF() {
     local model="${!model_var}"
     local file="${!file_var}"
     local target="/workspace/ComfyUI/models/$dest_dir"
+
+    # hf preserves repository-relative paths below --local-dir. When the
+    # requested file already starts with its ComfyUI model directory, download
+    # from the models root to avoid paths such as
+    # models/diffusion_models/diffusion_models/<file>.
+    if [[ "$file" == "$dest_dir/"* ]]; then
+        target="/workspace/ComfyUI/models"
+    fi
     mkdir -p "$target"
 
     echo "ℹ️ [DOWNLOAD] Fetching $model + $file → $target"
@@ -671,8 +748,71 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
        echo "🟡 Low VRAM detected (${MAX_VRAM_GIB} GB < ${VRAM_THRESHOLD} GB)"
     fi
 
+    has_numbered_model_pair() {
+      local prefix="$1"
+      local name="$2"
+      local suffix="$3"
+      local i
+      local model_var
+      local file_var
+
+      for i in $(seq 1 20); do
+        model_var="${prefix}${name}${i}"
+        file_var="${prefix}${suffix}${i}"
+
+        if [[ -n "${!model_var}" && -n "${!file_var}" ]]; then
+          return 0
+        fi
+      done
+
+      return 1
+    }
+
+    # Blackwell-specific models replace the generic variables per category
+    # when at least one complete model/filename pair has been configured.
+    # Otherwise the generic variables are the fallback for that category.
+    if [[ "$HAS_GPU_BLACKWELL" -eq 1 ]]; then
+      if [[ "$HF_PREFIX" == "HF_MODEL_HVRAM_" ]]; then
+        BLACKWELL_VRAM_PREFIX="HF_MODEL_HVRAM_BLACKWELL_"
+      else
+        BLACKWELL_VRAM_PREFIX="HF_MODEL_LVRAM_BLACKWELL_"
+      fi
+
+      echo "⚫ Blackwell-specific models enabled"
+
+      for cat in "${CATEGORIES_HF[@]}"; do
+        IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
+
+        for i in $(seq 1 20); do
+          VAR_MODEL="${BLACKWELL_VRAM_PREFIX}${NAME}${i}"
+          VAR_FILE="${BLACKWELL_VRAM_PREFIX}${SUFFIX}${i}"
+          download_model_HF "$VAR_MODEL" "$VAR_FILE" "$DIR"
+        done
+      done
+
+      for cat in "${CATEGORIES_HF[@]}"; do
+        IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
+
+        for i in $(seq 1 20); do
+          VAR_MODEL="HF_MODEL_BLACKWELL_${NAME}${i}"
+          VAR_FILE="HF_MODEL_BLACKWELL_${SUFFIX}${i}"
+          download_model_HF "$VAR_MODEL" "$VAR_FILE" "$DIR"
+        done
+      done
+    fi
+
     for cat in "${CATEGORIES_HF[@]}"; do
       IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
+
+      # Prefer the VRAM-specific Blackwell variables. If none are configured
+      # for this category, continue below with the standard VRAM variables.
+      if [[ "$HAS_GPU_BLACKWELL" -eq 1 ]]; then
+        if has_numbered_model_pair "$BLACKWELL_VRAM_PREFIX" "$NAME" "$SUFFIX"; then
+          continue
+        fi
+
+        echo "ℹ️ No ${BLACKWELL_VRAM_PREFIX}${NAME} models configured; using ${HF_PREFIX}${NAME}"
+      fi
 
       for i in $(seq 1 20); do
         VAR_MODEL="${HF_PREFIX}${NAME}${i}"
@@ -684,7 +824,17 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
     # Huggingface download file to specified directory independent on VRAM 
     for cat in "${CATEGORIES_HF[@]}"; do
       IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
-	
+
+      # Prefer the generic Blackwell variables. If none are configured for
+      # this category, continue below with the standard generic variables.
+      if [[ "$HAS_GPU_BLACKWELL" -eq 1 ]]; then
+        if has_numbered_model_pair "HF_MODEL_BLACKWELL_" "$NAME" "$SUFFIX"; then
+          continue
+        fi
+
+        echo "ℹ️ No HF_MODEL_BLACKWELL_${NAME} models configured; using HF_MODEL_${NAME}"
+      fi
+
       for i in $(seq 1 20); do
         VAR1="HF_MODEL_${NAME}${i}"
         VAR2="HF_MODEL_${SUFFIX}${i}"
@@ -714,7 +864,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
     echo "📥 Provisioning workflows"
 
     # provisioning workflows VRAM dependent
-    if (( MAX_VRAM_GIB > 40 )); then
+    if (( MAX_VRAM_GIB > VRAM_THRESHOLD )); then
        WORKFLOW_PREFIX="WORKFLOW_HVRAM"
     else
        WORKFLOW_PREFIX="WORKFLOW_LVRAM"
