@@ -156,17 +156,18 @@ WORKDIR /ComfyUI/custom_nodes/ComfyUI-Lora-Manager
 COPY --chmod=644 /configuration/lora-manager-settings.json settings.json.template
 
 WORKDIR /
-# Clone documentation repo into /comfyui-docs
+# Clone the documentation repo and copy the required files in one layer.
+# Keeping these operations together prevents a stale clone layer from being reused
+# when a documentation filename changes upstream.
 RUN --mount=type=cache,target=/root/.cache/git \
-    git clone --depth=1 --filter=blob:none https://github.com/jalberty2018/comfyui-docs.git /comfyui-docs
-
-# Copy docs *inside* the image
-RUN mkdir -p /docs && \
-    cp /comfyui-docs/ComfyUI_WAN_configuration.md /docs/ComfyUI_WAN_configuration.md && \
+    git clone --depth=1 --filter=blob:none https://github.com/jalberty2018/comfyui-docs.git /comfyui-docs && \
+    mkdir -p /docs && \
+    cp /comfyui-docs/RunPod_configuration.md /docs/ComfyUI_WAN_configuration.md && \
     cp /comfyui-docs/ComfyUI_WAN_custom_nodes.md /docs/ComfyUI_WAN_custom_nodes.md && \
     cp /comfyui-docs/ComfyUI_WAN_hardware.md /docs/ComfyUI_WAN_hardware.md && \
     cp /comfyui-docs/ComfyUI_WAN_image_setup.md /docs/ComfyUI_WAN_image_setup.md && \
-    cp /comfyui-docs/ComfyUI_WAN_resources.md /docs/ComfyUI_WAN_resources.md
+    cp /comfyui-docs/ComfyUI_WAN_resources.md /docs/ComfyUI_WAN_resources.md && \
+    rm -rf /comfyui-docs
 
 # Copy Scripts and documentation
 COPY --chmod=755 start.sh onworkspace/comfyui-on-workspace.sh onworkspace/files-on-workspace.sh onworkspace/test-on-workspace.sh onworkspace/docs-on-workspace.sh / 
@@ -175,20 +176,19 @@ COPY --chmod=644 onworkspace/batch.txt /batch.txt
 COPY --chmod=644 test/ /test
 COPY --chmod=644 docs/ /docs
 
-# Cleanup
-RUN rm -rf /comfyui-docs
-
 # Set Workspace
 WORKDIR /workspace
 
 # Expose Necessary Ports
 EXPOSE 8188 9000
 
+# Licenses differ by component; see THIRD_PARTY_NOTICES.md.
+# Clear any inherited blanket license label for the assembled image.
 # Labels
 LABEL org.opencontainers.image.title="ComfyUI 0.31.0 for WAN 2.x inference" \
       org.opencontainers.image.description="ComfyUI + internal manager + flash-attn + sageattention + onnxruntime-gpu + torch_generic_nms + code-server + civitai downloader + huggingface_hub + custom_nodes" \
       org.opencontainers.image.source="https://hub.docker.com/r/ls250824/run-comfyui-wan2" \
-      org.opencontainers.image.licenses="MIT"
+      org.opencontainers.image.licenses=""
 
 # Test
 RUN python -c "import torch, torchvision, torchaudio, triton, importlib, importlib.util as iu; \

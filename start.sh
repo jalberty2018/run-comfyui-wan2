@@ -923,7 +923,7 @@ else
     fi
 fi
 
-echo "📘 Tutorial: https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/"
+echo "📘 Tutorial: https://comfyui.rozenlaan.site/ComfyUI_tutorial/"
 
 # Environment
 echo "ℹ️ Running environment"

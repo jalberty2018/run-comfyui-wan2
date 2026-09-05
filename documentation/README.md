@@ -3,12 +3,16 @@
 ## Pre-Installed Custom Nodes
 
 - Open ComfyUI Manager to review installed custom nodes.
+- [custom_nodes](docs/ComfyUI_WAN_custom_nodes.md)
 
 ## Documentation
 
-- [Model provisioning](../docs/ComfyUI_WAN_provisioning.md)
-- [RunPod environment templates](runpod-env-templates.md)
-- [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
+- [Model provisioning](docs/ComfyUI_WAN_provisioning.md)
+- [Resources](docs/ComfyUI_WAN_resources.md)
+- [Image setup](docs/ComfyUI_WAN_image_setup.md)
+- [Environment variables](docs/ComfyUI_WAN_configuration.md)
+- [Hardware Requirements](docs/ComfyUI_WAN_hardware.md)
+- [Tutorial](https://comfyui.rozenlaan.site/ComfyUI_tutorial/)
 - [Update](https://comfyui.rozenlaan.site/ComfyUI_WAN_update/)
 
 ## Workflows
@@ -83,3 +87,12 @@ python /workspace/test/test_llama_cpp.py
 python /workspace/test/test_environment.py
 python /workspace/test/test_environment_runpod.py
 ```
+
+## License and model responsibility
+
+Original repository code is covered by the
+[MIT License](https://github.com/jalberty2018/run-comfyui-wan2/blob/main/LICENSE).
+The assembled image includes components with their own licenses; see
+[Third-party notices](https://github.com/jalberty2018/run-comfyui-wan2/blob/main/THIRD_PARTY_NOTICES.md).
+Review [Model usage and responsibility](docs/MODEL_RESPONSIBILITY.md) before
+configuring downloads or using models.

@@ -38,7 +38,7 @@ A streamlined and automated environment for running **ComfyUI** with **WAN 2.x v
 ### Documentation
 
 - [⚙️ Start](https://comfyui.rozenlaan.site/ComfyUI_WAN)
-- [📚 Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial)
+- [📚 Tutorial](https://comfyui.rozenlaan.site/ComfyUI_WAN_tutorial/)
 - [⚙️ Provisioning examples](docs/ComfyUI_WAN_provisioning.md)
 
 ## 🐳 Docker Images
@@ -78,3 +78,19 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 
 python3 build_docker.py --username=<your_dockerhub_username> --tag=<custom_tag> --latest run-comfyui-wan2
 ```
+
+## License
+
+Original code, scripts, configuration and documentation in this repository are
+licensed under the [MIT License](LICENSE), except where otherwise noted.
+Third-party software and model weights retain their own licenses; MIT does not
+apply to the complete assembled Docker image. See
+[Third-party notices](THIRD_PARTY_NOTICES.md).
+
+### Model usage and responsibility
+
+Model weights are downloaded separately, including automatically through the
+user's provisioning settings. Users must review model licenses and applicable
+restrictions before deployment and are responsible for their inputs, use and
+sharing of generated content. See
+[Model usage and responsibility](docs/MODEL_RESPONSIBILITY.md).

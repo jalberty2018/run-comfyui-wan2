@@ -27,6 +27,7 @@
 ### Templates RunPod
 
 - Specific models, LoRAs, and workflows for the templates are downloaded when the pod starts.
+- [Deployment help](https://comfyui.rozenlaan.site/Runpod_pod_deployment/)
 
 ### Templates
 
@@ -107,3 +108,4 @@
 
 - [Image models](https://comfyui.rozenlaan.site/ComfyUI_image/)
 - [LTX 2.3](https://comfyui.rozenlaan.site/ComfyUI_LTX/)
+- [Minimax](https://comfyui.rozenlaan.site/ComfyUI_MiniMax/)
