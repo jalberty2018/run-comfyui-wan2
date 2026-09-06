@@ -87,12 +87,3 @@ python /workspace/test/test_llama_cpp.py
 python /workspace/test/test_environment.py
 python /workspace/test/test_environment_runpod.py
 ```
-
-## License and model responsibility
-
-Original repository code is covered by the
-[MIT License](https://github.com/jalberty2018/run-comfyui-wan2/blob/main/LICENSE).
-The assembled image includes components with their own licenses; see
-[Third-party notices](https://github.com/jalberty2018/run-comfyui-wan2/blob/main/THIRD_PARTY_NOTICES.md).
-Review [Model usage and responsibility](docs/MODEL_RESPONSIBILITY.md) before
-configuring downloads or using models.
