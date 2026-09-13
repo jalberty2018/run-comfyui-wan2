@@ -22,11 +22,10 @@ This template downloads only WAN Animate components, not the T2V, I2V/SVI or SCA
 1. [Deploy the WAN 2.2 Animate template](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o).
 2. Select an L40S or RTX 6000 Ada and sufficient Pod RAM.
 3. Use a persistent volume with space for models, source media and output.
-4. Set `PASSWORD` and any required download tokens.
-5. Avoid Pods without a region; they can be unstable.
-6. Deploy and follow the container logs.
-7. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
-8. Load a SAM2 or SAM3 Animate workflow and run a short first test.
+4. Avoid Pods without a region; they can be unstable.
+5. Deploy and follow the container logs.
+6. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
+7. Load a SAM2 or SAM3 Animate workflow and run a short first test.
 
 ## Included workflows and components
 

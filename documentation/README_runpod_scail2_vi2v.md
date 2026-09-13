@@ -1,4 +1,4 @@
-# One Click - SCAIL-2 video-to-video with subject motion control
+# SCAIL-2 video-to-video with subject motion control
 
 Transfer motion from a driving video to a reference subject in ComfyUI with SCAIL-2. The diffusion model, DPO and LightX2V LoRAs, VAE, encoders, SAM, custom nodes and workflow are provisioned automatically.
 
@@ -20,11 +20,10 @@ This template downloads only SCAIL-2 VI2V components, not the WAN 2.2 T2V, I2V/S
 1. [Deploy the SCAIL-2 VI2V template](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o).
 2. Choose FP16 for maximum quality or FP8 for a 24 GB GPU.
 3. Select sufficient Pod RAM and persistent volume storage.
-4. Set `PASSWORD` and any required download tokens.
-5. Avoid Pods without a region; they can be unstable.
-6. Deploy and follow the container logs.
-7. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
-8. Load the supplied SCAIL-2 VI2V workflow and begin with a short source clip.
+4. Avoid Pods without a region; they can be unstable.
+5. Deploy and follow the container logs.
+6. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
+7. Load the supplied SCAIL-2 VI2V workflow and begin with a short source clip.
 
 ## Included components
 

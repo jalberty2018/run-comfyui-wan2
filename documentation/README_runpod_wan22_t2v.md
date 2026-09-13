@@ -20,11 +20,10 @@ This template downloads only the WAN 2.2 T2V components, not I2V/SVI, Animate or
 1. [Deploy the WAN 2.2 T2V template](https://console.runpod.io/deploy?template=qvozvvb1xd&ref=se4tkc5o).
 2. Select a supported NVIDIA GPU and sufficient Pod RAM.
 3. Use a persistent volume with space for models, inputs and outputs.
-4. Set `PASSWORD` and any required download tokens.
-5. Avoid Pods without a region; they can be unstable.
-6. Deploy and follow the container logs.
-7. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
-8. Load a supplied T2V workflow and run a small first test.
+4. Avoid Pods without a region; they can be unstable.
+5. Deploy and follow the container logs.
+6. Wait for `Provisioning done, ready to create AI content` before opening ComfyUI.
+7. Load a supplied T2V workflow and run a small first test.
 
 ## Included workflows and components
 
