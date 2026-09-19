@@ -131,34 +131,6 @@ WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-TripleKSampl
 WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-t2v-MoESheduler-pod.json
 ```
 
-### Dyno
-
-```bash
-CIVITAI_TOKEN="{{ RUNPOD_SECRET_CivitAI_API_KEY }}"
-HF_TOKEN="{{ RUNPOD_SECRET_HF_TOKEN_WRITE }}"
-PASSWORD="{{ RUNPOD_SECRET_CODE-SERVER-NEW }}"
-HF_MODEL_DIFFUSION_MODELS1=Comfy-Org/Wan_2.2_ComfyUI_Repackaged
-HF_MODEL_DIFFUSION_MODELS_FILENAME1=split_files/diffusion_models/wan2.2_t2v_low_noise_14B_fp16.safetensors
-HF_MODEL_DIFFUSION_MODELS2=lightx2v/Wan2.2-Lightning
-HF_MODEL_DIFFUSION_MODELS_FILENAME2=Wan2.2-T2V-A14B-4steps-250928-dyno/Wan2.2-T2V-A14B-4steps-250928-dyno-high-lightx2v.safetensors
-HF_MODEL_VAE1=Kijai/WanVideo_comfy
-HF_MODEL_VAE_FILENAME1=Wan2_1_VAE_fp32.safetensors
-HF_MODEL_TEXT_ENCODERS1=LS110824/text_encoders
-HF_MODEL_TEXT_ENCODERS_FILENAME1=wan21UMT5XxlFP32_fp32.safetensors
-HF_MODEL_LORA1=lightx2v/Wan2.2-Lightning
-HF_MODEL_LORA_FILENAME1=Wan2.2-T2V-A14B-4steps-lora-250928/low_noise_model.safetensors
-HF_MODEL_LORA2=LS110824/Wan21_lora
-HF_MODEL_LORA_FILENAME2=Wan14B_RealismBoost_T2V.safetensors
-HF_MODEL_LORA3=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME3=Wan2.2-T2V-AgeSlider-14B_high_noise.safetensors
-HF_MODEL_LORA4=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME4=Wan2.2-T2V-AgeSlider-14B_low_noise.safetensors
-HF_MODEL_LORA5=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME5=Wan2.2-T2V-BodySizeSliderv2-HIGH14B.safetensors
-HF_MODEL_LORA6=LS110824/Wan22_lora
-HF_MODEL_LORA_FILENAME6=Wan2.2-T2V-BodySizeSliderv2-LOW14B.safetensors
-```
-
 ### i2v + SVI Pro (lightning, long video)
 
 #### Public
@@ -254,9 +226,8 @@ HF_MODEL_LORA4=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME4=FastWan/FastWan_T2V_14B_480p_lora_rank_128_bf16.safetensors
 HF_MODEL_LORA5=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME5=Pusa/Wan21_PusaV1_LoRA_14B_rank512_bf16.safetensors
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam2-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
 ```
 
 #### Private (to test)
@@ -283,12 +254,8 @@ HF_MODEL_LORA4=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME4=FastWan/FastWan_T2V_14B_480p_lora_rank_128_bf16.safetensors
 HF_MODEL_LORA5=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME5=Pusa/Wan21_PusaV1_LoRA_14B_rank512_bf16.safetensors
-HF_MODEL1=VeryAladeen/Sec-4B
-HF_MODEL_FILENAME1=SeC-4B-fp16.safetensors
-HF_MODEL_DIR1=models/sams
-WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam2-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
+WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-animate-vi2v-sam3-point-collector-pod.json
 ```
 
 ### s2v
