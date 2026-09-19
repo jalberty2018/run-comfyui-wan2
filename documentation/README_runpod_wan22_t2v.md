@@ -1,4 +1,4 @@
-# One Click - WAN 2.2 text-to-video with LightX2V
+# WAN 2.2 text-to-video with LightX2V
 
 Generate video from text in ComfyUI with WAN 2.2 A14B. The high- and low-noise models, VAE, text encoder, acceleration LoRAs, upscaler, custom nodes and workflows are provisioned automatically.
 

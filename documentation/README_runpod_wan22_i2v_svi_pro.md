@@ -1,4 +1,4 @@
-# One Click - WAN 2.2 image-to-video and long video with SVI v2 PRO
+# WAN 2.2 image-to-video and long video with SVI v2 PRO
 
 Animate images and create extended video in ComfyUI with WAN 2.2 I2V, LightX2V and Stable Video Infinity v2 PRO. Models, LoRAs, VAE, vision/text encoders, upscaler, nodes and workflows are provisioned automatically.
 

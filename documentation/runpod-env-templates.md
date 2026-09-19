@@ -189,10 +189,9 @@ HF_MODEL_LORA_FILENAME5=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_HIGH_lightx2v_4ste
 HF_MODEL_LORA6=Kijai/WanVideo_comfy
 HF_MODEL_LORA_FILENAME6=LoRAs/Wan22_Lightx2v/Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_64_fp16.safetensors
 WORKFLOW1=https://provisioning.rozenlaan.site/wan/WAN22-i2v-PainterAdvanced-pod.json
-WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-MoESheduler-pod.json
-WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
-WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
-WORKFLOW5=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-longvideo-pod.json
+WORKFLOW2=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-SVI-20-pro-pod.json
+WORKFLOW3=https://provisioning.rozenlaan.site/wan/WAN22-i2v-SVI-20-pro-pod.json
+WORKFLOW4=https://provisioning.rozenlaan.site/wan/WAN22-wrapper-i2v-longvideo-pod.json
 ```
 
 #### Private

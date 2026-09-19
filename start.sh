@@ -9,6 +9,9 @@ export HF_HUB_DISABLE_PROGRESS_BARS=0
 export HF_HUB_DISABLE_UPDATE_CHECK=1
 export HF_DOWNLOAD_TIMEOUT="${HF_DOWNLOAD_TIMEOUT:-10m}"
 
+# Link VHS to ffmpeg.
+export VHS_FORCE_FFMPEG_PATH="${VHS_FORCE_FFMPEG_PATH:-/usr/bin/ffmpeg}"
+
 # Enable SSH if PUBLIC_KEY is set
 if [[ -n "$PUBLIC_KEY" ]]; then
     mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -29,9 +32,6 @@ fi
 
 # Create output directory for cloud transfer
 mkdir -p /workspace/output/
-
-# Set optimizations
-export PYTORCH_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.8
 
 # GPU detection
 echo "ℹ️ Testing GPU/CUDA provisioning"
@@ -59,7 +59,7 @@ if command -v nvidia-smi >/dev/null 2>&1; then
     # expose the compute_cap query field.
     GPU_COMPUTE_CAPS="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null || true)"
     if awk -F. '$1 + 0 >= 10 { found=1 } END { exit !found }' <<< "$GPU_COMPUTE_CAPS" \
-       || grep -Eqi 'Blackwell|(^|[^[:alnum:]])(GB[0-9]{2,3}|B100|B200|B300|GeForce[[:space:]]+RTX[[:space:]]+50[0-9]{2})($|[^[:alnum:]])' <<< "$GPU_MODEL"; then
+       || grep -Eqi 'Blackwell|(^|[^[:alnum:]])(GB[0-9]{2,3}|B100|B200|B300|GeForce[[:space:]]+RTX[[:space:]]+50[0-9]{2}|RTX[[:space:]]+PRO[[:space:]]+6000)($|[^[:alnum:]])' <<< "$GPU_MODEL"; then
       export HAS_GPU_BLACKWELL=1
       echo "✅ [BLACKWELL GPU DETECTED] HAS_GPU_BLACKWELL=1"
     else
@@ -99,11 +99,10 @@ if [[ "$HAS_GPU" -eq 1 || "$HAS_GPU_RUNPOD" -eq 1 ]]; then
     fi
 	
     echo "🎉 code-server service started"
+    sleep 1
 else
     echo "⚠️ WARNING: No GPU available, Code Server not started to limit memory use"
 fi
-	
-sleep 2
 
 # Python, Torch CUDA check
 HAS_CUDA=0
@@ -165,22 +164,43 @@ HAS_COMFYUI=0
 
 if [[ "$HAS_CUDA" -eq 1 ]]; then
 
-    SETTINGS_DIR="/workspace/ComfyUI/custom_nodes/ComfyUI-Lora-Manager"
-	SETTINGS_FILE="$SETTINGS_DIR/settings.json"
-	TEMPLATE_FILE="$SETTINGS_DIR/settings.json.template"
-	
-	mkdir -p "$SETTINGS_DIR"
-	
-	if [[ -n "${CIVITAI_TOKEN:-}" ]]; then
-	    echo "ℹ️ Injecting CIVITAI_TOKEN into ComfyUI-Lora-Manager"
-	
-	    jq --arg token "$CIVITAI_TOKEN" \
-	       '.civitai_api_key = $token' \
-	       "$TEMPLATE_FILE" > "$SETTINGS_FILE"
-	else
-	    echo "⚠️ CIVITAI_TOKEN not set – Insert your token manually in ComfyUI-Lora-Manager"
-	fi
-	
+    # Use the template bundled with the image, including on persistent workspaces.
+    if ! python3 - <<'PY_SETTINGS'
+import json
+import os
+from pathlib import Path
+import tempfile
+
+template = Path("/lora-manager-settings.json")
+settings = Path("/workspace/ComfyUI/custom_nodes/ComfyUI-Lora-Manager/settings.json")
+with template.open(encoding="utf-8") as source:
+    config = json.load(source)
+if not isinstance(config, dict):
+    raise ValueError("Lora-Manager settings template must contain a JSON object")
+
+token = os.environ.get("CIVITAI_TOKEN")
+if token:
+    config["civitai_api_key"] = token
+
+settings.parent.mkdir(parents=True, exist_ok=True)
+temporary = None
+try:
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=settings.parent,
+                                     prefix=".settings-", suffix=".json", delete=False) as target:
+        temporary = Path(target.name)
+        json.dump(config, target, ensure_ascii=False, indent=2)
+        target.write("\n")
+    temporary.replace(settings)
+finally:
+    if temporary is not None:
+        temporary.unlink(missing_ok=True)
+print("✅ Lora-Manager settings loaded from template" +
+      (" with CIVITAI_TOKEN" if token else ""))
+PY_SETTINGS
+    then
+        echo "❌ Failed to initialize Lora-Manager settings" >&2
+    fi
+
    	echo "▶️ ComfyUI service starting (CUDA available)"
 	    
     python3 /workspace/ComfyUI/main.py ${COMFYUI_EXTRA_ARGUMENTS:---listen --enable-manager --preview-method latent2rgb} &
@@ -217,50 +237,56 @@ show_runpod_services() {
         return 0
     fi
 
-    echo "ℹ️ Connect to the following services from console menu or url"
+    local output
+    # Buffer all output until the health checks have finished.
+    output="$(exec 2>&1
+        echo "ℹ️ Connect to the following services from console menu or url ℹ️"
 
-    if [[ -z "${RUNPOD_POD_ID:-}" ]]; then
-        echo "⚠️ RUNPOD_POD_ID not set — service URLs unavailable"
-        return 0
-    fi
-
-    local service
-    local port
-    local url
-    local local_url
-    local http_code
-    local -A services=(
-      ["Code-Server"]=9000
-      ["ComfyUI"]=8188
-    )
-
-    # Local health checks (inside the pod)
-    for service in "${!services[@]}"; do
-        port="${services[$service]}"
-        url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/login"
-        local_url="http://127.0.0.1:${port}/"
-
-        echo "👉 🔗 Service ${service} : ${url}"
-
-        # Check service locally (no proxy dependency)
-        http_code="$(curl -sS -o /dev/null -m 2 --connect-timeout 1 -w "%{http_code}" "$local_url" || true)"
-
-        # Treat common “service is up but protected/redirect” codes as UP
-        if [[ "$http_code" =~ ^(200|301|302|401|403|404)$ ]]; then
-            echo "✅ ${service} is running (local ${local_url}, HTTP ${http_code})"
-        else
-            echo "❌ ${service} not responding yet (local ${local_url}, HTTP ${http_code})"
+        if [[ -z "${RUNPOD_POD_ID:-}" ]]; then
+            echo "⚠️ RUNPOD_POD_ID not set — service URLs unavailable"
+            return 0
         fi
-    done
 
-    echo "👉 🔗 Lora-Manager: https://${RUNPOD_POD_ID}-8188.proxy.runpod.net/loras"
+        local service
+        local port
+        local url
+        local local_url
+        local http_code
+        local -A services=(
+          ["Code-Server"]=9000
+          ["ComfyUI"]=8188
+        )
+
+        # Local health checks (inside the pod)
+        for service in "${!services[@]}"; do
+            port="${services[$service]}"
+            url="https://${RUNPOD_POD_ID}-${port}.proxy.runpod.net/login"
+            local_url="http://127.0.0.1:${port}/"
+
+            echo "👉 🔗 Service ${service} : ${url}"
+
+            # Check service locally (no proxy dependency)
+            http_code="$(curl -sS -o /dev/null -m 2 --connect-timeout 1 -w "%{http_code}" "$local_url" || true)"
+
+            # Treat common “service is up but protected/redirect” codes as UP
+            if [[ "$http_code" =~ ^(200|301|302|401|403|404)$ ]]; then
+                echo "✅ ${service} is running (local ${local_url}, HTTP ${http_code})"
+            else
+                echo "❌ ${service} not responding yet (local ${local_url}, HTTP ${http_code})"
+            fi
+        done
+
+        echo "👉 🔗 Lora-Manager: https://${RUNPOD_POD_ID}-8188.proxy.runpod.net/loras"
+
+    )"
+    printf '%s\n' "$output"
 }
 
 show_code_server_login() {
     if [[ -n "$PASSWORD" ]]; then
-        echo "ℹ️ Code-Server login use PASSWORD set as env"
+        echo "ℹ️ Code-Server login use PASSWORD set as env ℹ️"
     else
-        echo "⚠️ Code-Server login use the logged password"
+        echo "⚠️ Code-Server login use the logged password ⚠️"
         cat /root/.config/code-server/config.yaml
     fi
 }
@@ -271,6 +297,11 @@ run_hf_download() {
     local stall_timeout="${HF_DOWNLOAD_STALL_TIMEOUT:-300}"
     local kill_after="${HF_DOWNLOAD_KILL_AFTER:-30}"
     local hf_command
+    local hf_dry_run_command
+    local dry_run_output
+    local total_size_value
+    local total_size_unit
+    local total_bytes=0
     local tmp_dir
     local fifo
     local pid
@@ -300,6 +331,27 @@ run_hf_download() {
     # Force human output so progress bars remain enabled when the command is
     # captured through the pseudo-terminal and FIFO below.
     printf -v hf_command '%q ' hf download --format human "$@"
+
+    # Ask the Hub for the selected file size before starting. The dry run uses
+    # the same repository, file filters, authentication and destination as the
+    # real download, but does not transfer the model itself.
+    printf -v hf_dry_run_command '%q ' hf download --dry-run --format human "$@"
+    dry_run_output="$(eval "$hf_dry_run_command" 2>&1 || true)"
+    if [[ "$dry_run_output" =~ totalling[[:space:]]+([0-9]+([.][0-9]+)?)([KMGTPE]?) ]]; then
+        total_size_value="${BASH_REMATCH[1]}"
+        total_size_unit="${BASH_REMATCH[3]}"
+        total_bytes="$(awk -v value="$total_size_value" -v unit="$total_size_unit" '
+            BEGIN {
+                exponent = index("KMGTPE", unit)
+                multiplier = 1
+                for (i = 0; i < exponent; i++) multiplier *= 1000
+                printf "%.0f", value * multiplier
+            }
+        ')"
+        printf 'ℹ️ [DOWNLOAD] Total size: %.2f GB\n' "$(awk -v bytes="$total_bytes" 'BEGIN { print bytes / 1000000000 }')"
+    else
+        echo "⚠️ [DOWNLOAD] Total size could not be determined; continuing download."
+    fi
 
     tmp_dir="$(mktemp -d)"
     fifo="${tmp_dir}/hf-output.fifo"
@@ -348,21 +400,40 @@ run_hf_download() {
                 local previous_bytes
                 local current_bytes
                 local downloaded_bytes
-                local downloaded_mib
+                local downloaded_gb
+                local speed_mbps
+                local previous_sample_time
+                local current_sample_time
+                local elapsed_seconds
+                local interval_bytes
 
                 baseline_bytes="$(du -s -B1 "$download_dir" 2>/dev/null | awk '{print $1}')"
                 baseline_bytes="${baseline_bytes:-0}"
                 previous_bytes="$baseline_bytes"
+                previous_sample_time="$(date +%s)"
 
                 while kill -0 "$pid" 2>/dev/null; do
                     sleep 10
                     current_bytes="$(du -s -B1 "$download_dir" 2>/dev/null | awk '{print $1}')"
                     current_bytes="${current_bytes:-0}"
+                    current_sample_time="$(date +%s)"
 
                     if (( current_bytes > previous_bytes )); then
                         downloaded_bytes=$((current_bytes - baseline_bytes))
-                        downloaded_mib=$((downloaded_bytes / 1024 / 1024))
-                        echo "⬇️ [DOWNLOAD] Progress: ${downloaded_mib} MiB received"
+                        interval_bytes=$((current_bytes - previous_bytes))
+                        elapsed_seconds=$((current_sample_time - previous_sample_time))
+                        (( elapsed_seconds < 1 )) && elapsed_seconds=1
+                        downloaded_gb="$(awk -v bytes="$downloaded_bytes" 'BEGIN { printf "%.2f", bytes / 1000000000 }')"
+                        speed_mbps="$(awk -v bytes="$interval_bytes" -v seconds="$elapsed_seconds" 'BEGIN { printf "%.1f", bytes / seconds / 1000000 }')"
+                        if (( total_bytes > 0 )); then
+                            printf '⬇️ [DOWNLOAD] Progress: %s / %.2f GB | %s MB/s\n' \
+                                "$downloaded_gb" \
+                                "$(awk -v bytes="$total_bytes" 'BEGIN { print bytes / 1000000000 }')" \
+                                "$speed_mbps"
+                        else
+                            printf '⬇️ [DOWNLOAD] Progress: %s GB downloaded | %s MB/s\n' \
+                                "$downloaded_gb" "$speed_mbps"
+                        fi
                         date +%s > "$progress_activity_tmp_file"
                         mv -f "$progress_activity_tmp_file" "$last_activity_file"
                     else
@@ -370,6 +441,7 @@ run_hf_download() {
                     fi
 
                     previous_bytes="$current_bytes"
+                    previous_sample_time="$current_sample_time"
                 done
             ) &
             progress_pid=$!
@@ -738,14 +810,19 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
 
     MAX_VRAM_GIB="$(get_max_vram_gib)"
     VRAM_THRESHOLD="${VRAM_THRESHOLD:-36}"
+    VRAM_THRESHOLD_BLACKWELL="${VRAM_THRESHOLD_BLACKWELL:-40}"
 
     if (( MAX_VRAM_GIB > VRAM_THRESHOLD )); then
         HF_PREFIX="HF_MODEL_HVRAM_"
-        echo "🟢 High VRAM detected (${MAX_VRAM_GIB} GB > ${VRAM_THRESHOLD} GB)"
+        if [[ "$HAS_GPU_BLACKWELL" -ne 1 ]]; then
+          echo "🟢 High VRAM detected (${MAX_VRAM_GIB} GB > ${VRAM_THRESHOLD} GB via VRAM_THRESHOLD)"
+        fi
         export COMFYUI_VRAM_MODE=HIGH_VRAM
     else
        HF_PREFIX="HF_MODEL_LVRAM_"
-       echo "🟡 Low VRAM detected (${MAX_VRAM_GIB} GB < ${VRAM_THRESHOLD} GB)"
+       if [[ "$HAS_GPU_BLACKWELL" -ne 1 ]]; then
+         echo "🟡 Low VRAM detected (${MAX_VRAM_GIB} GB <= ${VRAM_THRESHOLD} GB via VRAM_THRESHOLD)"
+       fi
     fi
 
     has_numbered_model_pair() {
@@ -772,13 +849,13 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
     # when at least one complete model/filename pair has been configured.
     # Otherwise the generic variables are the fallback for that category.
     if [[ "$HAS_GPU_BLACKWELL" -eq 1 ]]; then
-      if [[ "$HF_PREFIX" == "HF_MODEL_HVRAM_" ]]; then
+      if (( MAX_VRAM_GIB > VRAM_THRESHOLD_BLACKWELL )); then
         BLACKWELL_VRAM_PREFIX="HF_MODEL_HVRAM_BLACKWELL_"
+        echo "⚫ Blackwell high-VRAM models enabled (${MAX_VRAM_GIB} GB > ${VRAM_THRESHOLD_BLACKWELL} GB via VRAM_THRESHOLD_BLACKWELL)"
       else
         BLACKWELL_VRAM_PREFIX="HF_MODEL_LVRAM_BLACKWELL_"
+        echo "⚫ Blackwell low-VRAM models enabled (${MAX_VRAM_GIB} GB <= ${VRAM_THRESHOLD_BLACKWELL} GB via VRAM_THRESHOLD_BLACKWELL)"
       fi
-
-      echo "⚫ Blackwell-specific models enabled"
 
       for cat in "${CATEGORIES_HF[@]}"; do
         IFS=":" read -r NAME SUFFIX DIR <<< "$cat"
@@ -834,7 +911,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
 
         echo "ℹ️ No HF_MODEL_BLACKWELL_${NAME} models configured; using HF_MODEL_${NAME}"
       fi
-
+	
       for i in $(seq 1 20); do
         VAR1="HF_MODEL_${NAME}${i}"
         VAR2="HF_MODEL_${SUFFIX}${i}"
@@ -864,7 +941,7 @@ if [[ "$HAS_COMFYUI" -eq 1 ]]; then
     echo "📥 Provisioning workflows"
 
     # provisioning workflows VRAM dependent
-    if (( MAX_VRAM_GIB > VRAM_THRESHOLD )); then
+    if (( MAX_VRAM_GIB > 40 )); then
        WORKFLOW_PREFIX="WORKFLOW_HVRAM"
     else
        WORKFLOW_PREFIX="WORKFLOW_LVRAM"
@@ -895,38 +972,8 @@ else
     echo "⚠️ Skipped Provisioning: No workflows or models downloaded as ComfyUI is not online"
 fi
 
-echo "ℹ️ Connections and/or diagnostic information"
-
-if [[ "$HAS_PROVISIONING" -eq 1 ]]; then 
-    echo "🎉 Provisioning done, ready to create AI content 🎉"
-
-    show_runpod_services
-    show_code_server_login
-
-else
-    if [[ "$HAS_GPU_RUNPOD" -eq 0 ]]; then
-        echo "⚠️ Pod started without a runpod GPU"
-    fi
-
-    if [[ "$HAS_CUDA" -eq 0 ]]; then
-        echo "❌ Pytorch CUDA driver error/mismatch/not available"
-        if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
-            echo "⚠️ [SOLUTION 1] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown}. ⚠️"
-			echo "⚠️ [SOLUTION 2] Specify CUDA 12.8 using the runpod console filter. ⚠️"
-        fi
-    fi
-
-    if [[ "$HAS_CUDA" -eq 1 && "$HAS_COMFYUI" -eq 0 ]]; then
-        echo "❌ ComfyUI is not online (extreme slow vCPU's)"
-        echo "⚠️ [SOLUTION 1] restart pod ⚠️"
-		echo "⚠️ [SOLUTION 2] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown}. ⚠️"
-    fi
-fi
-
-echo "📘 Tutorial: https://comfyui.rozenlaan.site/ComfyUI_tutorial/"
-
 # Environment
-echo "ℹ️ Running environment"
+echo "ℹ️ Running environment check"
 
 python - <<'PY'
 import platform
@@ -983,6 +1030,52 @@ else:
     print("ONNX Runtime: not available")
 PY
 
+if [[ "$HAS_PROVISIONING" -eq 1 ]]; then 
+    echo "🎉 Provisioning done, ready to create AI content 🎉"
+
+    show_runpod_services
+    show_code_server_login
+
+    echo "🎉 Provisioning done, ready to create AI content 🎉"
+
+else
+    echo "⚠️ Diagnostics, skipped provisioning ⚠️"
+
+    if [[ "$HAS_GPU_RUNPOD" -eq 0 ]]; then
+        echo "⚠️ Pod started without a runpod GPU"
+    fi
+
+    if [[ "$HAS_CUDA" -eq 0 ]]; then
+        echo "❌ Pytorch CUDA driver error/mismatch/not available"
+        if [[ "$HAS_GPU_RUNPOD" -eq 1 ]]; then
+            echo "⚠️ [SOLUTION 1] Deploy pod on another region then $RUNPOD_DC_ID. ⚠️"
+			echo "⚠️ [SOLUTION 2] Specify CUDA 12.8 using the runpod console filter. ⚠️"
+        fi
+    fi
+
+    if [[ "$HAS_CUDA" -eq 1 && "$HAS_COMFYUI" -eq 0 ]]; then
+        echo "❌ ComfyUI is not online (extreme slow vCPU's)"
+        echo "⚠️ [SOLUTION 1] restart pod ⚠️"
+		echo "⚠️ [SOLUTION 2] Deploy pod on another region then ${RUNPOD_DC_ID:-unknown} ⚠️"
+    fi
+fi
+
+echo "📘 Tutorial: https://comfyui.rozenlaan.site/ComfyUI_tutorial/"
+
+# Check whether NVENC can actually encode video
+echo "📘 Checking NVENC video encoding (h264_nvenc)..."
+
+if timeout --kill-after=5s 30s "$VHS_FORCE_FFMPEG_PATH" \
+    -hide_banner -loglevel error -nostdin \
+    -f lavfi -i color=size=1280x720:rate=30 \
+    -frames:v 30 -an -c:v h264_nvenc -pix_fmt yuv420p -f null -; then
+    echo "✅ NVENC video encoding (h264_nvenc) is available on this host."
+else
+    echo "⚠️: NVENC GPU video encoding test failed on this host. Use standard CPU libx264 for video encoding." >&2
+fi
+
+echo "ℹ️ llama-cpp-python check"
+
 python - <<'PY'
 import llama_cpp
 print("llama-cpp-python version:", llama_cpp.__version__)
@@ -993,6 +1086,26 @@ try:
 except Exception as e2:
     print("Failed:", e2)
 PY
+
+echo "ℹ️ llama-cpp check"
+
+# Native llama.cpp diagnostics.
+LLAMA_CLI_PATH="$(command -v llama-cli 2>/dev/null || true)"
+LLAMA_SERVER_PATH="${MINIMAX_H3_LLAMA_SERVER:-$(command -v llama-server 2>/dev/null || true)}"
+
+if [[ -n "$LLAMA_CLI_PATH" && -x "$LLAMA_CLI_PATH" ]]; then
+    echo "llama.cpp CLI found: $LLAMA_CLI_PATH"
+    "$LLAMA_CLI_PATH" --version || echo "⚠️ llama-cli version check failed"
+else
+    echo "❌ llama.cpp CLI not found in PATH"
+fi
+
+if [[ -n "$LLAMA_SERVER_PATH" && -x "$LLAMA_SERVER_PATH" ]]; then
+    echo "llama.cpp server found: $LLAMA_SERVER_PATH"
+    "$LLAMA_SERVER_PATH" --version || echo "⚠️ llama-server version check failed"
+else
+    echo "❌ llama.cpp server not found via MINIMAX_H3_LLAMA_SERVER or PATH"
+fi
 
 # Keep the container running
 echo "ℹ️ End script"
