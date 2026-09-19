@@ -128,10 +128,6 @@ RUN set -eux; GIT_TERMINAL_PROMPT=0 git -c http.version="$GIT_HTTP_VERSION" fetc
 RUN sed -i '/^comfy-env/d' requirements.txt
 RUN sed -i '/^comfy-test/d' requirements.txt
 
-WORKDIR /ComfyUI/custom_nodes/ComfyUI-QwenVL-Mod
-# Use working version
-RUN set -eux; GIT_TERMINAL_PROMPT=0 git -c http.version="$GIT_HTTP_VERSION" fetch --depth=1 origin 9cd567191c606a51e14fd5f612c6974a262eb04a && git checkout --detach 9cd567191c606a51e14fd5f612c6974a262eb04a
-
 WORKDIR /ComfyUI/custom_nodes/ComfyUI-Easy-Use
 # remove onnxruntime
 RUN sed -i '/^onnxruntime/d' requirements.txt
