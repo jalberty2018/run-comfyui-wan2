@@ -1,9 +1,56 @@
-# Manual provisioning VLM
+# Manual provisioning for llama.cpp VLM and test models
 
-## QWEN3 VL
+- [`theresa00l/Qwen3.8-27B-Uncensored-FP8-Q4_K_M-GGUF`](https://huggingface.co/theresa00l/Qwen3.8-27B-Uncensored-FP8-Q4_K_M-GGUF)
+- [`unsloth/Qwen3.8-27B-GGUF`](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)
+- [`TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF`](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF)
 
-- [Abliturated 4B](https://huggingface.co/huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated/tree/main)
+The Qwen language model and matching vision projector are used by
+`test_llama_cpp_qwen.py`. Together they require about 18 GB of storage.
+The Dolphin Heretic model and its patched Q8_0 projector provide an additional
+uncensored multimodal prompt enhancer and require about 14.8 GB of storage.
+TinyLlama is the smaller test model used by `test_llama_cpp_qwen_chat.py` and
+`test_llama_cpp_python.py`. The multimodal test uses the standard
+`/workspace/ComfyUI/input/example.png`; no separate test-image download is
+required.
+
+## Qwen VLM language model
 
 ```bash
-hf download huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated --local-dir /workspace/ComfyUI/models/LLM/Qwen-VL/Qwen3-VL-4B-Instruct
+hf download theresa00l/Qwen3.8-27B-Uncensored-FP8-Q4_K_M-GGUF \
+  qwen3.8-27b-uncensored-fp8-q4_k_m.gguf \
+  --local-dir /workspace/ComfyUI/models/LLM/Qwen3.8
+```
+
+## Matching MMProj
+
+The F16 projector comes from the matching base-model repository:
+
+```bash
+hf download unsloth/Qwen3.8-27B-GGUF \
+  mmproj-F16.gguf \
+  --local-dir /workspace/ComfyUI/models/LLM/Qwen3.8
+```
+
+Files containing `mmproj` are intentionally excluded from the Prompt
+Enhancer's text-model dropdown. The projector remains available to
+`llama-mtmd-cli` for the multimodal runtime test.
+
+## TinyLlama test model
+
+```bash
+hf download TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF \
+  tinyllama-1.1b-chat-v1.0.Q8_0.gguf \
+  --local-dir /workspace/ComfyUI/models/LLM/Qwen3.8
+```
+
+TinyLlama is intended only as a compact functional test model. Use the Qwen
+model for the MiniMax H3 prompt-enhancement and multimodal test workflows.
+
+## Resulting files
+
+```text
+/workspace/ComfyUI/models/LLM/Qwen3.8/
+├── qwen3.8-27b-uncensored-fp8-q4_k_m.gguf
+├── mmproj-F16.gguf
+└── tinyllama-1.1b-chat-v1.0.Q8_0.gguf
 ```

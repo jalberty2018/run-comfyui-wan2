@@ -187,7 +187,7 @@ WORKDIR /
 RUN set -eux; \
     GIT_TERMINAL_PROMPT=0 git -c http.version="$GIT_HTTP_VERSION" clone --depth=1 https://github.com/jalberty2018/comfyui-docs.git /comfyui-docs && \
     mkdir -p /docs && \
-    cp /comfyui-docs/RunPod_configuration.md /docs/ComfyUI_WAN_configuration.md && \
+    cp /comfyui-docs/RunPod_configuration.md /docs/RunPod_configuration.md && \
     cp /comfyui-docs/ComfyUI_WAN_custom_nodes.md /docs/ComfyUI_WAN_custom_nodes.md && \
     cp /comfyui-docs/ComfyUI_WAN_hardware.md /docs/ComfyUI_WAN_hardware.md && \
     cp /comfyui-docs/ComfyUI_WAN_image_setup.md /docs/ComfyUI_WAN_image_setup.md && \

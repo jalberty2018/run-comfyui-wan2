@@ -28,5 +28,4 @@
 - [detection](provisioning/hf_detection.md)
 - [upscale](provisioning/hf_upscale.md)
 - [vfi](provisioning/hf_frame_interpolation.md)
-- [vlm](provisioning/hf_vlm.md)
 - [SeedVR2](provisioning/hf_seedvr2.md)

@@ -15,7 +15,7 @@ This template downloads only WAN Animate components, not the T2V, I2V/SVI or SCA
 | **WAN 2.2 Animate — this template** | Subject animation, replacement, relighting and motion transfer |
 | [WAN 2.2 T2V](https://console.runpod.io/deploy?template=qvozvvb1xd&ref=se4tkc5o) | Generate video entirely from text |
 | [WAN 2.2 I2V + SVI v2 PRO](https://console.runpod.io/deploy?template=moem21s8xb&ref=se4tkc5o) | Animate an image or create longer video |
-| [SCAIL-2 VI2V](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o) | Guide a reference subject with a driving video |
+| [SCAIL-2 VI2V](https://console.runpod.io/hub/template/dhi6kykubt?ref=se4tkc5o) | Guide a reference subject with a driving video |
 
 ## Start here
 

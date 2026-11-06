@@ -17,7 +17,7 @@ This template downloads only SCAIL-2 VI2V components, not the WAN 2.2 T2V, I2V/S
 
 ## Start here
 
-1. [Deploy the SCAIL-2 VI2V template](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o).
+1. [Deploy the SCAIL-2 VI2V template](https://console.runpod.io/hub/template/dhi6kykubt?ref=se4tkc5o).
 2. Choose FP16 for maximum quality or FP8 for a 24 GB GPU.
 3. Select sufficient Pod RAM and persistent volume storage.
 4. Avoid Pods without a region; they can be unstable.

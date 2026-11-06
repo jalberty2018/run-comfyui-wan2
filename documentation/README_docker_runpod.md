@@ -37,7 +37,7 @@
 
 [**👉 One-click Deploy WAN 2.2 animate (lightx2v)**](https://console.runpod.io/deploy?template=tp7gj0khyo&ref=se4tkc5o)
 
-[**👉 One-click Deploy WAN SCAIL-2 VI2V (lightx2v)**](https://console.runpod.io/deploy?template=9i0lkwau54&ref=se4tkc5o)
+[**👉 One-click Deploy WAN SCAIL-2 VI2V (lightx2v)**](https://console.runpod.io/hub/template/dhi6kykubt?ref=se4tkc5o)
 
 ### Documentation
 
